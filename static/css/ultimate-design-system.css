@@ -1,0 +1,825 @@
+/* ========================================
+   ULTIMATE DESIGN SYSTEM - ProofLens AI
+   Maximum Visual Excellence & Consistency
+   ======================================== */
+
+:root {
+    /* Core Colors */
+    --primary: #667eea;
+    --primary-dark: #5568d3;
+    --primary-light: #8b9eff;
+    --secondary: #f093fb;
+    --accent: #4facfe;
+    --accent-2: #fa709a;
+    
+    /* Dark Theme */
+    --dark: #0a0e27;
+    --dark-2: #151932;
+    --dark-3: #1e2139;
+    --dark-4: #2a2f4f;
+    
+    /* Light Theme */
+    --light: #ffffff;
+    --light-2: #f7fafc;
+    --light-3: #edf2f7;
+    
+    /* Semantic Colors */
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --info: #3b82f6;
+    
+    /* Text Colors */
+    --text-primary: #ffffff;
+    --text-secondary: #a0aec0;
+    --text-muted: #718096;
+    
+    /* Gradients */
+    --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --gradient-4: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    --gradient-error: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.2);
+    --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.3);
+    --shadow-glow: 0 0 30px rgba(102, 126, 234, 0.5);
+    --shadow-glow-pink: 0 0 30px rgba(240, 147, 251, 0.5);
+    --shadow-glow-cyan: 0 0 30px rgba(79, 172, 254, 0.5);
+    
+    /* Borders */
+    --border-light: rgba(255, 255, 255, 0.05);
+    --border-medium: rgba(255, 255, 255, 0.1);
+    --border-strong: rgba(255, 255, 255, 0.2);
+    
+    /* Transitions */
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    
+    /* Spacing */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2rem;
+    --space-xl: 3rem;
+    --space-2xl: 4rem;
+    
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 30px;
+    --radius-full: 9999px;
+    
+    /* Z-Index */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+}
+
+/* ========================================
+   GLOBAL STYLES
+   ======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+    background: var(--dark);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========================================
+   ANIMATED BACKGROUND (Global)
+   ======================================== */
+
+.ultimate-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.gradient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.35;
+    animation: float 25s ease-in-out infinite;
+}
+
+.orb-1 {
+    width: 700px;
+    height: 700px;
+    background: var(--gradient-1);
+    top: -250px;
+    left: -250px;
+    animation-delay: 0s;
+}
+
+.orb-2 {
+    width: 600px;
+    height: 600px;
+    background: var(--gradient-2);
+    top: 40%;
+    right: -200px;
+    animation-delay: 8s;
+}
+
+.orb-3 {
+    width: 650px;
+    height: 650px;
+    background: var(--gradient-3);
+    bottom: -250px;
+    left: 35%;
+    animation-delay: 16s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    33% { transform: translate(150px, -150px) scale(1.2) rotate(120deg); }
+    66% { transform: translate(-150px, 150px) scale(0.85) rotate(240deg); }
+}
+
+/* ========================================
+   CUSTOM CURSOR
+   ======================================== */
+
+.ultimate-cursor {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--primary);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: difference;
+}
+
+.ultimate-cursor-follower {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--secondary);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.3s ease;
+    opacity: 0.5;
+}
+
+/* ========================================
+   NAVIGATION
+   ======================================== */
+
+.ultimate-nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(10, 14, 39, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--border-light);
+    z-index: var(--z-fixed);
+    transition: all var(--transition-slow);
+}
+
+.ultimate-nav.scrolled {
+    background: rgba(10, 14, 39, 0.95);
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.15);
+    border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ultimate-logo {
+    font-size: 28px;
+    font-weight: 900;
+    background: var(--gradient-hero);
+    background-size: 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -1.5px;
+    animation: glow 3s ease-in-out infinite, gradientShift 3s ease infinite;
+    cursor: pointer;
+    transition: transform var(--transition-base);
+}
+
+.ultimate-logo:hover {
+    transform: scale(1.05);
+}
+
+@keyframes glow {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.6)); }
+    50% { filter: drop-shadow(0 0 25px rgba(240, 147, 251, 1)); }
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+/* ========================================
+   BUTTONS (Ultimate Edition)
+   ======================================== */
+
+.ultimate-btn {
+    padding: 16px 36px;
+    border-radius: var(--radius-xl);
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    transition: all var(--transition-slow);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1;
+}
+
+.ultimate-btn-primary {
+    background: var(--gradient-1);
+    color: var(--light);
+}
+
+.ultimate-btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+    z-index: -1;
+}
+
+.ultimate-btn-primary:hover::before {
+    width: 500px;
+    height: 500px;
+}
+
+.ultimate-btn-primary:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 25px 70px rgba(102, 126, 234, 0.7);
+}
+
+.ultimate-btn-secondary {
+    background: transparent;
+    color: var(--light);
+    border: 2px solid var(--border-strong);
+}
+
+.ultimate-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-glow);
+}
+
+.ultimate-btn-success {
+    background: var(--gradient-success);
+    color: var(--light);
+}
+
+.ultimate-btn-success:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 25px 70px rgba(16, 185, 129, 0.6);
+}
+
+.ultimate-btn-lg {
+    padding: 20px 48px;
+    font-size: 18px;
+}
+
+.ultimate-btn-sm {
+    padding: 12px 24px;
+    font-size: 14px;
+}
+
+.ultimate-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Shine effect */
+.ultimate-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.ultimate-btn:hover::after {
+    left: 100%;
+}
+
+/* ========================================
+   CARDS
+   ======================================== */
+
+.ultimate-card {
+    background: rgba(21, 25, 50, 0.5);
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+    transition: all var(--transition-slow);
+    position: relative;
+    overflow: hidden;
+}
+
+.ultimate-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient-1);
+    opacity: 0;
+    transition: opacity var(--transition-slow);
+    border-radius: var(--radius-lg);
+    z-index: -1;
+}
+
+.ultimate-card:hover::before {
+    opacity: 0.1;
+}
+
+.ultimate-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: rgba(102, 126, 234, 0.3);
+    box-shadow: 0 30px 80px rgba(102, 126, 234, 0.3);
+}
+
+.ultimate-card-glow {
+    box-shadow: var(--shadow-glow);
+}
+
+.ultimate-card-glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ========================================
+   INPUT FIELDS
+   ======================================== */
+
+.ultimate-input {
+    width: 100%;
+    padding: 16px 20px;
+    background: rgba(21, 25, 50, 0.6);
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 16px;
+    transition: all var(--transition-base);
+    font-family: inherit;
+}
+
+.ultimate-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2), var(--shadow-glow);
+    background: rgba(21, 25, 50, 0.8);
+}
+
+.ultimate-input::placeholder {
+    color: var(--text-muted);
+}
+
+.ultimate-textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.ultimate-input-group {
+    position: relative;
+    margin-bottom: var(--space-lg);
+}
+
+.ultimate-input-label {
+    display: block;
+    margin-bottom: var(--space-xs);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ultimate-input-icon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+/* ========================================
+   BADGES & TAGS
+   ======================================== */
+
+.ultimate-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.ultimate-badge-primary {
+    background: rgba(102, 126, 234, 0.15);
+    color: var(--primary);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.ultimate-badge-success {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--success);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.ultimate-badge-warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--warning);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.ultimate-badge-error {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--error);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.ultimate-badge-glow {
+    animation: badgeGlow 2s ease-in-out infinite;
+}
+
+@keyframes badgeGlow {
+    0%, 100% { box-shadow: 0 0 10px currentColor; }
+    50% { box-shadow: 0 0 20px currentColor; }
+}
+
+/* ========================================
+   LOADING & SPINNERS
+   ======================================== */
+
+.ultimate-loader {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(102, 126, 234, 0.2);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.ultimate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.ultimate-shimmer {
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.05) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* ========================================
+   RESULTS & STATUS
+   ======================================== */
+
+.ultimate-result-card {
+    background: var(--ultimate-card);
+    padding: 40px;
+    border-radius: var(--radius-xl);
+    margin: var(--space-xl) 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.ultimate-score-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    font-weight: 900;
+    margin: 0 auto var(--space-lg);
+    position: relative;
+    background: conic-gradient(var(--primary) var(--score-percent), rgba(102, 126, 234, 0.2) 0);
+    animation: scoreReveal 1.5s ease-out;
+}
+
+@keyframes scoreReveal {
+    from {
+        transform: scale(0) rotate(0deg);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) rotate(360deg);
+        opacity: 1;
+    }
+}
+
+.ultimate-score-circle::before {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    background: var(--dark-2);
+    border-radius: 50%;
+}
+
+.ultimate-score-text {
+    position: relative;
+    z-index: 1;
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ========================================
+   MODALS & OVERLAYS
+   ======================================== */
+
+.ultimate-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 14, 39, 0.9);
+    backdrop-filter: blur(10px);
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-base);
+}
+
+.ultimate-modal.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.ultimate-modal-content {
+    background: var(--dark-2);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-xl);
+    padding: var(--space-2xl);
+    max-width: 600px;
+    width: 100%;
+    transform: scale(0.9);
+    transition: transform var(--transition-bounce);
+}
+
+.ultimate-modal.active .ultimate-modal-content {
+    transform: scale(1);
+}
+
+/* ========================================
+   TOOLTIPS
+   ======================================== */
+
+.ultimate-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.ultimate-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    background: var(--dark-3);
+    color: var(--text-primary);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: all var(--transition-base);
+    pointer-events: none;
+    border: 1px solid var(--border-medium);
+    box-shadow: var(--shadow-lg);
+}
+
+.ultimate-tooltip:hover::after {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+}
+
+/* ========================================
+   PROGRESS BARS
+   ======================================== */
+
+.ultimate-progress {
+    width: 100%;
+    height: 12px;
+    background: rgba(102, 126, 234, 0.2);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    position: relative;
+}
+
+.ultimate-progress-bar {
+    height: 100%;
+    background: var(--gradient-1);
+    border-radius: var(--radius-full);
+    transition: width 1s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.ultimate-progress-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: progressShine 2s ease-in-out infinite;
+}
+
+@keyframes progressShine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* ========================================
+   RESPONSIVE UTILITIES
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .nav-container {
+        padding: 16px 24px;
+    }
+    
+    .ultimate-card {
+        padding: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 12px 20px;
+    }
+    
+    .ultimate-logo {
+        font-size: 24px;
+    }
+    
+    .ultimate-btn {
+        padding: 14px 28px;
+        font-size: 15px;
+    }
+    
+    .ultimate-card {
+        padding: 24px;
+    }
+    
+    .orb-1, .orb-2, .orb-3 {
+        width: 400px !important;
+        height: 400px !important;
+    }
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+.text-gradient {
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.text-glow {
+    text-shadow: 0 0 20px currentColor;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.visible {
+    display: block !important;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.glass-effect {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Fade in animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+/* 3D Transform utilities */
+.transform-3d {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+.hover-lift {
+    transition: transform var(--transition-base);
+}
+
+.hover-lift:hover {
+    transform: translateY(-8px);
+}
+
+.hover-scale {
+    transition: transform var(--transition-base);
+}
+
+.hover-scale:hover {
+    transform: scale(1.05);
+}

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - ProofLens AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <style>
+        .checkout-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .checkout-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .checkout-header h1 {
+            font-size: 2.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .plan-summary {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .plan-summary h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+        
+        .plan-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .plan-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+        
+        .plan-price span {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+        
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+        
+        .plan-features li {
+            padding: 8px 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .plan-features li:before {
+            content: "✓";
+            color: var(--success-color);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .payment-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .payment-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+        
+        .payment-info {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .payment-row:last-child {
+            margin-bottom: 0;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .razorpay-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .razorpay-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+        
+        .razorpay-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .secure-badge svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--success-color);
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .back-link:hover {
+            color: var(--secondary-color);
+        }
+        
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .success-message {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .checkout-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'includes/navbar.html' %}
+    
+    <div class="checkout-container">
+        <div class="checkout-header">
+            <h1>Complete Your Purchase</h1>
+            <p style="color: var(--text-secondary);">Secure payment powered by Razorpay</p>
+        </div>
+        
+        <div id="error-message" class="error-message"></div>
+        <div id="success-message" class="success-message"></div>
+        
+        <div class="checkout-grid">
+            <!-- Plan Summary -->
+            <div class="plan-summary">
+                <h2>Plan Summary</h2>
+                <div class="plan-name">{{ plan.name }}</div>
+                <div class="plan-price">
+                    {% if plan.price == 0 %}
+                        Free
+                    {% else %}
+                        ₹{{ plan.price }}
+                        <span>/month</span>
+                    {% endif %}
+                </div>
+                
+                <ul class="plan-features">
+                    {% for feature in plan.features %}
+                    <li>{{ feature }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <!-- Payment Section -->
+            <div class="payment-section">
+                <h2>Payment Details</h2>
+                
+                <div class="payment-info">
+                    <div class="payment-row">
+                        <span>Plan</span>
+                        <strong>{{ plan.name }}</strong>
+                    </div>
+                    <div class="payment-row">
+                        <span>Credits per month</span>
+                        <strong>{{ plan.credits_per_month }}</strong>
+                    </div>
+                    <div class="payment-row">
+                        <span>Billing cycle</span>
+                        <strong>Monthly</strong>
+                    </div>
+                    <div class="payment-row">
+                        <span>Total</span>
+                        <strong>₹{{ plan.price }}</strong>
+                    </div>
+                </div>
+                
+                {% if plan.price == 0 %}
+                    <button class="razorpay-btn" onclick="activateFreeSubscription()">
+                        <span>Activate Free Plan</span>
+                    </button>
+                {% else %}
+                    <button id="razorpay-button" class="razorpay-btn" onclick="initiatePayment()">
+                        <span id="button-text">Proceed to Payment</span>
+                        <div class="loading-spinner" id="loading-spinner"></div>
+                    </button>
+                {% endif %}
+                
+                <div class="secure-badge">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                    </svg>
+                    <span>Secured by Razorpay</span>
+                </div>
+            </div>
+        </div>
+        
+        <a href="{{ url_for('pricing') }}" class="back-link">← Back to pricing</a>
+    </div>
+    
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="{{ url_for('static', filename='js/utils/themeToggle.js') }}"></script>
+    <script>
+        const planId = {{ plan.id }};
+        const razorpayKeyId = "{{ razorpay_key_id }}";
+        
+        function showError(message) {
+            const errorEl = document.getElementById('error-message');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            setTimeout(() => {
+                errorEl.style.display = 'none';
+            }, 5000);
+        }
+        
+        function showSuccess(message) {
+            const successEl = document.getElementById('success-message');
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+        }
+        
+        function setLoading(loading) {
+            const button = document.getElementById('razorpay-button');
+            const buttonText = document.getElementById('button-text');
+            const spinner = document.getElementById('loading-spinner');
+            
+            if (loading) {
+                button.disabled = true;
+                buttonText.textContent = 'Processing...';
+                spinner.style.display = 'block';
+            } else {
+                button.disabled = false;
+                buttonText.textContent = 'Proceed to Payment';
+                spinner.style.display = 'none';
+            }
+        }
+        
+        async function activateFreeSubscription() {
+            setLoading(true);
+            
+            try {
+                const response = await fetch('/api/subscription/activate-free', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ plan_id: planId })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showSuccess('Free plan activated successfully!');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1500);
+                } else {
+                    showError(data.error || 'Failed to activate free plan');
+                    setLoading(false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('An error occurred. Please try again.');
+                setLoading(false);
+            }
+        }
+        
+        async function initiatePayment() {
+            setLoading(true);
+            
+            try {
+                // Create order
+                const response = await fetch('/api/subscription/create-order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ plan_id: planId })
+                });
+                
+                const data = await response.json();
+                
+                if (!data.success) {
+                    showError(data.error || 'Failed to create order');
+                    setLoading(false);
+                    return;
+                }
+                
+                // Open Razorpay checkout
+                const options = {
+                    key: razorpayKeyId,
+                    amount: data.order.amount,
+                    currency: data.order.currency,
+                    name: 'ProofLens AI',
+                    description: `Subscription: ${data.plan.name}`,
+                    order_id: data.order.id,
+                    handler: function(response) {
+                        verifyPayment(response);
+                    },
+                    prefill: {
+                        email: '{{ current_user.email }}',
+                        name: '{{ current_user.username }}'
+                    },
+                    theme: {
+                        color: '#6366f1'
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            setLoading(false);
+                        }
+                    }
+                };
+                
+                const rzp = new Razorpay(options);
+                rzp.open();
+                setLoading(false);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showError('An error occurred. Please try again.');
+                setLoading(false);
+            }
+        }
+        
+        async function verifyPayment(response) {
+            setLoading(true);
+            
+            try {
+                const verifyResponse = await fetch('/api/subscription/verify-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature,
+                        plan_id: planId
+                    })
+                });
+                
+                const data = await verifyResponse.json();
+                
+                if (data.success) {
+                    showSuccess('Payment successful! Redirecting to dashboard...');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 2000);
+                } else {
+                    showError(data.error || 'Payment verification failed');
+                    setLoading(false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('An error occurred during verification. Please contact support.');
+                setLoading(false);
+            }
+        }
+    </script>
+</body>
+</html>

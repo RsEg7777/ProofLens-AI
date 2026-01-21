@@ -1,15 +1,17 @@
 <!-- Navbar Component -->
 <nav class="navbar">
   <div class="nav-container">
-    <div class="logo">Verif<span>AI</span></div>
+    <div class="logo">ProofLens<span>AI</span></div>
     <div class="nav-links">
       <a href="/" {% if active_page=='home' %}class="active" {% endif %}>Home</a>
-      <a href="/about" {% if active_page=='about' %}class="active" {% endif %}>About</a>
-      <a href="/image-detection" {% if active_page=='image-detection' %}class="active" {% endif %}>Image Detection</a>
-      <a href="/text-verification" {% if active_page=='text-verification' %}class="active" {% endif %}>Text Verify</a>
-      <a href="/how-it-works" {% if active_page=='how-it-works' %}class="active" {% endif %}>How it Works</a>
-      <a href="/faq" {% if active_page=='faq' %}class="active" {% endif %}>FAQ</a>
-      <a href="/contact" {% if active_page=='contact' %}class="active" {% endif %}>Contact</a>
+      <a href="/pricing" {% if active_page=='pricing' %}class="active" {% endif %}>Pricing</a>
+      <a href="/video-detection" {% if active_page=='video-detection' %}class="active" {% endif %}>Video</a>
+      <a href="/audio-detection" {% if active_page=='audio-detection' %}class="active" {% endif %}>Audio</a>
+      <a href="/url-checker" {% if active_page=='url-checker' %}class="active" {% endif %}>URL Check</a>
+      <a href="/image-detection" {% if active_page=='image-detection' %}class="active" {% endif %}>Image</a>
+      {% if current_user.is_authenticated %}
+      <a href="/dashboard" {% if active_page=='dashboard' %}class="active" {% endif %}>Dashboard</a>
+      {% endif %}
       <!-- User Profile Icon with Dropdown -->
       <div class="user-profile-container">
         {% if current_user.is_authenticated %}
@@ -21,8 +23,11 @@
             <a href="{{ url_for('auth.profile') }}">
               <i class="fa-solid fa-user"></i> Profile
             </a>
-            <a href="{{ url_for('auth.dashboard') }}">
+            <a href="{{ url_for('dashboard') }}">
               <i class="fa-solid fa-gauge-high"></i> Dashboard
+            </a>
+            <a href="{{ url_for('pricing') }}">
+              <i class="fa-solid fa-credit-card"></i> Subscription
             </a>
             <a href="{{ url_for('auth.logout') }}">
               <i class="fa-solid fa-sign-out-alt"></i> Logout
@@ -56,12 +61,14 @@
       </div>
       <div class="sidebar-links">
       <a href="/" {% if active_page=='home' %}class="active" {% endif %}>Home</a>
-      <a href="/about" {% if active_page=='about' %}class="active" {% endif %}>About</a>
-      <a href="/image-detection" {% if active_page=='image-detection' %}class="active" {% endif %}>Image Detection</a>
-      <a href="/text-verification" {% if active_page=='text-verification' %}class="active" {% endif %}>Text Verify</a>
-      <a href="/how-it-works" {% if active_page=='how-it-works' %}class="active" {% endif %}>How it Works</a>
-      <a href="/faq" {% if active_page=='faq' %}class="active" {% endif %}>FAQ</a>
-      <a href="/contact" {% if active_page=='contact' %}class="active" {% endif %}>Contact</a>
+      <a href="/pricing" {% if active_page=='pricing' %}class="active" {% endif %}>Pricing</a>
+      <a href="/video-detection" {% if active_page=='video-detection' %}class="active" {% endif %}>Video</a>
+      <a href="/audio-detection" {% if active_page=='audio-detection' %}class="active" {% endif %}>Audio</a>
+      <a href="/url-checker" {% if active_page=='url-checker' %}class="active" {% endif %}>URL Check</a>
+      <a href="/image-detection" {% if active_page=='image-detection' %}class="active" {% endif %}>Image</a>
+      {% if current_user.is_authenticated %}
+      <a href="/dashboard" {% if active_page=='dashboard' %}class="active" {% endif %}>Dashboard</a>
+      {% endif %}
       <!-- User Profile Icon with Dropdown -->
       <div class="user-profile-container">
         {% if current_user.is_authenticated %}
@@ -73,8 +80,11 @@
             <a href="{{ url_for('auth.profile') }}">
               <i class="fa-solid fa-user"></i> Profile
             </a>
-            <a href="{{ url_for('auth.dashboard') }}">
+            <a href="{{ url_for('dashboard') }}">
               <i class="fa-solid fa-gauge-high"></i> Dashboard
+            </a>
+            <a href="{{ url_for('pricing') }}">
+              <i class="fa-solid fa-credit-card"></i> Subscription
             </a>
             <a href="{{ url_for('auth.logout') }}">
               <i class="fa-solid fa-sign-out-alt"></i> Logout

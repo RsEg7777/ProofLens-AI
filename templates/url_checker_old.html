@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Reputation Checker - ProofLens AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .checker-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .url-input-section {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 30px;
+        }
+
+        .url-input-wrapper {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .url-input {
+            flex: 1;
+            padding: 16px 20px;
+            font-size: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+        }
+
+        .results-container {
+            display: none;
+        }
+
+        .result-card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 20px;
+        }
+
+        .threat-score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            position: relative;
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .score-safe {
+            background: var(--success-bg);
+            color: var(--success);
+            border: 5px solid var(--success);
+        }
+
+        .score-warning {
+            background: var(--warning-bg);
+            color: var(--warning);
+            border: 5px solid var(--warning);
+        }
+
+        .score-danger {
+            background: var(--error-bg);
+            color: var(--error);
+            border: 5px solid var(--error);
+        }
+
+        .status-banner {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .banner-safe {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .banner-danger {
+            background: var(--error-bg);
+            color: var(--error);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--brand-primary);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        .threat-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .threat-item {
+            background: var(--error-bg);
+            color: var(--error);
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 4px solid var(--error);
+        }
+
+        .category-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .category-tag {
+            background: var(--brand-gradient);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="checker-container fade-in">
+        <h1>🔗 URL Reputation Checker</h1>
+        <p style="color: var(--text-secondary); margin-bottom: 30px;">
+            Check any URL for malware, phishing, and security threats using 70+ security vendors
+        </p>
+
+        <!-- URL Input Section -->
+        <div class="url-input-section">
+            <h2>Enter URL to Check</h2>
+            <div class="url-input-wrapper">
+                <input 
+                    type="url" 
+                    id="urlInput" 
+                    class="url-input" 
+                    placeholder="https://example.com"
+                    autocomplete="off"
+                >
+                <button id="checkBtn" class="btn btn-primary">
+                    Check URL
+                </button>
+            </div>
+            <p style="color: var(--text-tertiary); margin-top: 12px; font-size: 14px;">
+                💡 Tip: Shortened URLs (bit.ly, tinyurl) will be automatically expanded
+            </p>
+        </div>
+
+        <!-- Results Container -->
+        <div class="results-container" id="resultsContainer">
+            <!-- Status Banner -->
+            <div class="status-banner" id="statusBanner"></div>
+
+            <!-- URL Info Card -->
+            <div class="result-card">
+                <h3>Checked URL</h3>
+                <p id="checkedUrl" style="word-break: break-all; color: var(--text-secondary);"></p>
+            </div>
+
+            <!-- Threat Score -->
+            <div class="result-card" style="text-align: center;">
+                <h3>Threat Score</h3>
+                <div class="threat-score-circle" id="threatScoreCircle">
+                    <span id="threatScore">0%</span>
+                </div>
+                <p id="scoreDescription" style="color: var(--text-secondary);"></p>
+            </div>
+
+            <!-- Scan Statistics -->
+            <div class="result-card">
+                <h3>Scan Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-number" id="maliciousCount">0</div>
+                        <div class="stat-label">Malicious</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="suspiciousCount">0</div>
+                        <div class="stat-label">Suspicious</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="harmlessCount">0</div>
+                        <div class="stat-label">Harmless</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="totalCount">0</div>
+                        <div class="stat-label">Total Scans</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Threat Categories -->
+            <div class="result-card" id="categoriesCard" style="display: none;">
+                <h3>Threat Categories</h3>
+                <div class="category-list" id="categoryList"></div>
+            </div>
+
+            <!-- Specific Threats -->
+            <div class="result-card" id="threatsCard" style="display: none;">
+                <h3>⚠️ Threats Detected</h3>
+                <ul class="threat-list" id="threatList"></ul>
+            </div>
+
+            <button class="btn btn-secondary" onclick="resetChecker()">
+                Check Another URL
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h2 style="margin-top: 20px;">Scanning URL...</h2>
+            <p>Checking with 70+ security vendors</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/utils/themeToggle.js') }}"></script>
+    <script>
+        const urlInput = document.getElementById('urlInput');
+        const checkBtn = document.getElementById('checkBtn');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        // Enter key support
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkUrl();
+            }
+        });
+
+        checkBtn.addEventListener('click', checkUrl);
+
+        async function checkUrl() {
+            const url = urlInput.value.trim();
+
+            if (!url) {
+                alert('Please enter a URL');
+                return;
+            }
+
+            // Basic URL validation
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                alert('Please enter a valid URL starting with http:// or https://');
+                return;
+            }
+
+            loadingOverlay.style.display = 'flex';
+            resultsContainer.style.display = 'none';
+
+            try {
+                const response = await fetch('/check_url', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    displayResults(result);
+                } else {
+                    alert('Error: ' + (result.error || 'Failed to check URL'));
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                loadingOverlay.style.display = 'none';
+            }
+        }
+
+        function displayResults(result) {
+            // Status Banner
+            const statusBanner = document.getElementById('statusBanner');
+            statusBanner.textContent = result.status_message;
+            statusBanner.className = result.is_safe ? 'status-banner banner-safe' : 'status-banner banner-danger';
+
+            // Checked URL
+            document.getElementById('checkedUrl').textContent = result.url;
+
+            // Threat Score Circle
+            const threatScore = result.threat_score;
+            const threatScoreCircle = document.getElementById('threatScoreCircle');
+            const scoreDescription = document.getElementById('scoreDescription');
+            
+            document.getElementById('threatScore').textContent = threatScore + '%';
+
+            if (threatScore === 0) {
+                threatScoreCircle.className = 'threat-score-circle score-safe';
+                scoreDescription.textContent = 'This URL appears to be safe';
+            } else if (threatScore < 50) {
+                threatScoreCircle.className = 'threat-score-circle score-warning';
+                scoreDescription.textContent = 'This URL shows some suspicious indicators';
+            } else {
+                threatScoreCircle.className = 'threat-score-circle score-danger';
+                scoreDescription.textContent = 'This URL is potentially dangerous';
+            }
+
+            // Scan Statistics
+            const stats = result.scan_stats;
+            document.getElementById('maliciousCount').textContent = stats.malicious;
+            document.getElementById('suspiciousCount').textContent = stats.suspicious;
+            document.getElementById('harmlessCount').textContent = stats.harmless;
+            document.getElementById('totalCount').textContent = stats.total;
+
+            // Categories
+            const categoriesCard = document.getElementById('categoriesCard');
+            const categoryList = document.getElementById('categoryList');
+            
+            if (result.categories && result.categories.length > 0) {
+                categoriesCard.style.display = 'block';
+                categoryList.innerHTML = '';
+                result.categories.forEach(category => {
+                    const tag = document.createElement('span');
+                    tag.className = 'category-tag';
+                    tag.textContent = category;
+                    categoryList.appendChild(tag);
+                });
+            } else {
+                categoriesCard.style.display = 'none';
+            }
+
+            // Threats
+            const threatsCard = document.getElementById('threatsCard');
+            const threatList = document.getElementById('threatList');
+            
+            if (result.threats && result.threats.length > 0) {
+                threatsCard.style.display = 'block';
+                threatList.innerHTML = '';
+                result.threats.forEach(threat => {
+                    const li = document.createElement('li');
+                    li.className = 'threat-item';
+                    li.innerHTML = `
+                        <strong>${threat.vendor}</strong>: ${threat.result}
+                        <br><small style="opacity: 0.8;">Category: ${threat.category}</small>
+                    `;
+                    threatList.appendChild(li);
+                });
+            } else {
+                threatsCard.style.display = 'none';
+            }
+
+            resultsContainer.style.display = 'block';
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetChecker() {
+            urlInput.value = '';
+            resultsContainer.style.display = 'none';
+            urlInput.focus();
+        }
+    </script>
+</body>
+</html>

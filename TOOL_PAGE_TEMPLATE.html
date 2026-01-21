@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[TOOL_NAME] - ProofLens AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ultimate-design-system.css') }}">
+    <style>
+        body {
+            padding: 120px 20px 140px;
+            min-height: 100vh;
+        }
+
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-title {
+            font-size: clamp(40px, 6vw, 64px);
+            font-weight: 900;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200%;
+            animation: gradientShift 3s ease infinite;
+            margin-bottom: 16px;
+        }
+
+        .page-subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .file-drop-zone {
+            border: 3px dashed rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 60px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-drop-zone:hover {
+            background: rgba(102, 126, 234, 0.05);
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        .file-drop-zone.dragging {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: var(--secondary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="ultimate-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="ultimate-cursor"></div>
+    <div class="ultimate-cursor-follower"></div>
+
+    <!-- Tool Navigation -->
+    {% include 'components/tool_nav.html' %}
+
+    <!-- Main Content -->
+    <div class="tool-container">
+        <div class="page-header" data-aos="fade-up">
+            <h1 class="page-title">[TOOL_TITLE]</h1>
+            <p class="page-subtitle">[TOOL_DESCRIPTION]</p>
+        </div>
+
+        <div class="ultimate-card" data-aos="fade-up" data-aos-delay="200">
+            [TOOL_CONTENT_HERE]
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="{{ url_for('static', filename='js/ultimate-interactions.js') }}"></script>
+    <script>
+        // Tool-specific JavaScript
+    </script>
+</body>
+</html>

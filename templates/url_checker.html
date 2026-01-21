@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Checker - ProofLens AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ultimate-design-system.css') }}">
+    <style>
+        body {
+            padding: 120px 20px 140px;
+            min-height: 100vh;
+        }
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .page-title {
+            font-size: clamp(40px, 6vw, 64px);
+            font-weight: 900;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200%;
+            animation: gradientShift 3s ease infinite;
+            margin-bottom: 16px;
+        }
+        .page-subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        #results-section {
+            margin-top: 30px;
+        }
+        .result-card {
+            padding: 30px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+        }
+        .safety-score {
+            font-size: 48px;
+            font-weight: 900;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .safety-score.safe { color: var(--success); }
+        .safety-score.warning { color: var(--warning); }
+        .safety-score.danger { color: var(--error); }
+        .url-details {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+        }
+        .url-details h4 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+        .url-details p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="ultimate-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="ultimate-cursor"></div>
+    <div class="ultimate-cursor-follower"></div>
+
+    <!-- Tool Navigation -->
+    {% include 'components/tool_nav.html' %}
+
+    <!-- Main Content -->
+    <div class="tool-container">
+        <div class="page-header" data-aos="fade-up">
+            <h1 class="page-title">URL Checker</h1>
+            <p class="page-subtitle">Verify URL safety and detect phishing attempts</p>
+        </div>
+
+        <div class="ultimate-card" data-aos="fade-up" data-aos-delay="200">
+            <form id="urlForm" method="POST">
+                <div class="ultimate-input-wrapper" style="margin-bottom: 20px;">
+                    <i class="fas fa-link" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--text-secondary);"></i>
+                    <input 
+                        type="url" 
+                        id="url" 
+                        name="url" 
+                        class="ultimate-input" 
+                        style="padding-left: 50px;" 
+                        required 
+                        placeholder="https://example.com"
+                    >
+                </div>
+                <button type="submit" class="ultimate-btn ultimate-btn-primary ultimate-btn-large" style="width: 100%;">
+                    <i class="fas fa-shield-alt"></i> Check URL Safety
+                </button>
+            </form>
+        </div>
+
+        <div id="results-section" style="display: none;" data-aos="fade-up" data-aos-delay="400">
+            <div class="result-card">
+                <div class="safety-score" id="safetyScore">SAFE</div>
+                <div id="analysisDetails" class="url-details"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="{{ url_for('static', filename='js/ultimate-interactions.js') }}"></script>
+    <script>
+        document.getElementById('urlForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const url = document.getElementById('url').value;
+            const button = this.querySelector('button[type="submit"]');
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+            
+            try {
+                const response = await fetch('/check_url', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const scoreEl = document.getElementById('safetyScore');
+                    const isSafe = data.is_safe;
+                    const threatScore = data.threat_score || 0;
+                    
+                    scoreEl.textContent = isSafe ? '✓ SAFE' : '⚠ UNSAFE';
+                    scoreEl.className = 'safety-score ' + (isSafe ? 'safe' : 'danger');
+                    
+                    let detailsHTML = `<h4>Analysis Results</h4>`;
+                    detailsHTML += `<p><strong>Status:</strong> ${data.status || (isSafe ? 'Safe' : 'Potentially Dangerous')}</p>`;
+                    detailsHTML += `<p><strong>Threat Score:</strong> ${threatScore}%</p>`;
+                    
+                    if (data.categories && data.categories.length > 0) {
+                        detailsHTML += `<p><strong>Categories:</strong> ${data.categories.join(', ')}</p>`;
+                    }
+                    
+                    if (data.threats && data.threats.length > 0) {
+                        detailsHTML += `<p style="color: var(--error);"><strong>⚠️ Threats Detected:</strong></p><ul style="margin-left: 20px;">`;
+                        data.threats.forEach(t => {
+                            detailsHTML += `<li>${t}</li>`;
+                        });
+                        detailsHTML += `</ul>`;
+                    }
+                    
+                    document.getElementById('analysisDetails').innerHTML = detailsHTML;
+                    document.getElementById('results-section').style.display = 'block';
+                    AOS.refresh();
+                } else {
+                    alert('Error: ' + (data.error || 'Check failed. Please login first.'));
+                }
+            } catch (error) {
+                alert('Error checking URL. Please make sure you are logged in.');
+            } finally {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-shield-alt"></i> Check URL Safety';
+            }
+        });
+    </script>
+</body>
+</html>

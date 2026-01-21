@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Detection - ProofLens AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ultimate-design-system.css') }}">
+    <style>
+        body {
+            padding: 120px 20px 140px;
+            min-height: 100vh;
+        }
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .page-title {
+            font-size: clamp(40px, 6vw, 64px);
+            font-weight: 900;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200%;
+            animation: gradientShift 3s ease infinite;
+            margin-bottom: 16px;
+        }
+        .page-subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .file-drop-zone {
+            border: 3px dashed rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 60px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.02);
+        }
+        .file-drop-zone:hover {
+            background: rgba(102, 126, 234, 0.05);
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+        .file-drop-zone.dragging {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: var(--secondary);
+            transform: scale(1.05);
+        }
+        .file-drop-zone i {
+            font-size: 64px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        .video-preview {
+            margin-top: 20px;
+            border-radius: 16px;
+            overflow: hidden;
+            max-width: 100%;
+        }
+        .video-preview video {
+            width: 100%;
+            display: block;
+        }
+        #results-section {
+            margin-top: 30px;
+        }
+        .result-card {
+            padding: 30px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+        }
+        .ai-score {
+            font-size: 48px;
+            font-weight: 900;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .ai-score.high { color: var(--error); }
+        .ai-score.medium { color: var(--warning); }
+        .ai-score.low { color: var(--success); }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="ultimate-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="ultimate-cursor"></div>
+    <div class="ultimate-cursor-follower"></div>
+
+    <!-- Tool Navigation -->
+    {% include 'components/tool_nav.html' %}
+
+    <!-- Main Content -->
+    <div class="tool-container">
+        <div class="page-header" data-aos="fade-up">
+            <h1 class="page-title">Video Detection</h1>
+            <p class="page-subtitle">Detect deepfakes and AI-generated videos with advanced analysis</p>
+        </div>
+
+        <div class="ultimate-card" data-aos="fade-up" data-aos-delay="200">
+            <form id="videoForm" enctype="multipart/form-data">
+                <div class="file-drop-zone" id="dropZone">
+                    <i class="fas fa-video"></i>
+                    <h3>Drag & Drop Video</h3>
+                    <p>or click to browse (MP4, AVI, MOV, MKV - Max 100MB)</p>
+                    <input type="file" id="videoFile" name="video" accept="video/*" required style="display: none;">
+                </div>
+                <div id="preview" class="video-preview" style="display: none;"></div>
+                <button type="submit" class="ultimate-btn ultimate-btn-primary ultimate-btn-large" style="width: 100%; margin-top: 20px;" id="analyzeBtn" disabled>
+                    <i class="fas fa-search"></i> Analyze Video
+                </button>
+            </form>
+        </div>
+
+        <div id="results-section" style="display: none;" data-aos="fade-up" data-aos-delay="400">
+            <div class="result-card">
+                <div class="ai-score" id="aiScore">0%</div>
+                <div id="analysisDetails" style="margin-top: 20px; color: var(--text-secondary); line-height: 1.8;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="{{ url_for('static', filename='js/ultimate-interactions.js') }}"></script>
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const videoFile = document.getElementById('videoFile');
+        const preview = document.getElementById('preview');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+
+        dropZone.addEventListener('click', () => videoFile.click());
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragging');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragging');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragging');
+            const files = e.dataTransfer.files;
+            if (files.length) {
+                videoFile.files = files;
+                showPreview(files[0]);
+            }
+        });
+        
+        videoFile.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                showPreview(e.target.files[0]);
+            }
+        });
+        
+        function showPreview(file) {
+            const url = URL.createObjectURL(file);
+            preview.innerHTML = `<video controls><source src="${url}" type="${file.type}"></video>`;
+            preview.style.display = 'block';
+            analyzeBtn.disabled = false;
+        }
+
+        document.getElementById('videoForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('video', videoFile.files[0]);
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+            
+            try {
+                const response = await fetch('/detect_video', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const score = data.confidence || 0;
+                    const scoreEl = document.getElementById('aiScore');
+                    scoreEl.textContent = score + '%';
+                    scoreEl.className = 'ai-score ' + (data.is_deepfake ? 'high' : 'low');
+                    
+                    let reasonsHtml = '';
+                    if (data.reasons && data.reasons.length > 0) {
+                        reasonsHtml = '<ul style="margin: 15px 0 0 20px;">' + 
+                            data.reasons.map(r => `<li>${r}</li>`).join('') + '</ul>';
+                    }
+                    
+                    document.getElementById('analysisDetails').innerHTML = 
+                        `<p><strong>Status:</strong> ${data.status || (data.is_deepfake ? 'Deepfake Detected' : 'Likely Authentic')}</p>
+                         <p><strong>Confidence:</strong> ${score}%</p>
+                         <p><strong>Manipulation Type:</strong> ${data.manipulation_type || 'N/A'}</p>
+                         ${reasonsHtml}`;
+                    document.getElementById('results-section').style.display = 'block';
+                    AOS.refresh();
+                } else {
+                    alert('Error: ' + (data.error || 'Analysis failed. Please login first.'));
+                }
+            } catch (error) {
+                alert('Error analyzing video. Please make sure you are logged in.');
+            } finally {
+                analyzeBtn.disabled = false;
+                analyzeBtn.innerHTML = '<i class="fas fa-search"></i> Analyze Video';
+            }
+        });
+    </script>
+</body>
+</html>

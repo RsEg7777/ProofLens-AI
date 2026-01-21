@@ -120,26 +120,44 @@ function displayResults(data) {
         block: 'start'
     });
     
-    // Display status badge
-    const statusBadge = document.getElementById('status-badge');
+    // Get scores
+    const aiScore = data.ai_score || 0;
+    const humanScore = data.human_score || 0;
     const isAI = data.is_ai_generated;
+    
+    // Display status badge with appropriate theme
+    const statusBadge = document.getElementById('status-badge');
     const statusClass = isAI ? 'ai-generated' : 'real';
     const icon = isAI ? 'fa-robot' : 'fa-check-circle';
+    const statusText = isAI ? 'AI-Generated / Fake' : 'Real / Human-Made';
     
     statusBadge.className = `status-badge ${statusClass}`;
     statusBadge.innerHTML = `
         <i class="fas ${icon}"></i>
-        ${data.status}
+        ${statusText}
     `;
     
-    // Display confidence score
-    const confidence = data.confidence;
-    document.getElementById('confidence-value').textContent = confidence + '%';
+    // Display AI score (red bar)
+    document.getElementById('ai-score-value').textContent = aiScore.toFixed(2) + '%';
     
-    // Animate confidence bar
+    // Display Human score (green bar)
+    document.getElementById('human-score-value').textContent = humanScore.toFixed(2) + '%';
+    
+    // Animate both bars
     setTimeout(() => {
-        document.getElementById('confidence-fill').style.width = confidence + '%';
+        document.getElementById('ai-score-fill').style.width = aiScore + '%';
+        document.getElementById('human-score-fill').style.width = humanScore + '%';
     }, 100);
+    
+    // Apply theme color to result card based on result
+    const resultCard = document.querySelector('.result-card');
+    if (isAI) {
+        resultCard.style.borderLeft = '4px solid #ef4444';
+        resultCard.style.background = 'rgba(239, 68, 68, 0.03)';
+    } else {
+        resultCard.style.borderLeft = '4px solid #10b981';
+        resultCard.style.background = 'rgba(16, 185, 129, 0.03)';
+    }
     
     // Display reasons
     const reasonsList = document.getElementById('reasons-list');

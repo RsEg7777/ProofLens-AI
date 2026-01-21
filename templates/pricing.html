@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - ProofLens AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ultimate-design-system.css') }}">
+    <style>
+        .pricing-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .pricing-header h1 {
+            font-size: 48px;
+            margin-bottom: 16px;
+            background: var(--brand-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .pricing-card {
+            background: rgba(21, 25, 50, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            padding: 40px 30px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            border-color: rgba(102, 126, 234, 0.3);
+            box-shadow: 0 30px 80px rgba(102, 126, 234, 0.3);
+        }
+
+        .pricing-card.featured {
+            border: 3px solid var(--brand-primary);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+        }
+
+        .pricing-card.featured::before {
+            content: 'MOST POPULAR';
+            position: absolute;
+            top: 20px;
+            right: -35px;
+            background: var(--brand-gradient);
+            color: white;
+            padding: 5px 40px;
+            transform: rotate(45deg);
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .plan-name {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .plan-price {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--brand-primary);
+            margin-bottom: 8px;
+        }
+
+        .plan-price span {
+            font-size: 18px;
+            color: var(--text-secondary);
+        }
+
+        .plan-description {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            min-height: 50px;
+        }
+
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin: 30px 0;
+        }
+
+        .plan-features li {
+            padding: 12px 0;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plan-features li::before {
+            content: '✓';
+            color: var(--success);
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .plan-features li.disabled {
+            color: var(--text-tertiary);
+            opacity: 0.5;
+        }
+
+        .plan-features li.disabled::before {
+            content: '✗';
+            color: var(--text-tertiary);
+        }
+
+        .cta-button {
+            width: 100%;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 20px;
+        }
+
+        .cta-button.primary {
+            background: var(--brand-gradient);
+            color: white;
+        }
+
+        .cta-button.secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .faq-section {
+            margin-top: 80px;
+        }
+
+        .faq-item {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .faq-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .faq-question {
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-answer {
+            margin-top: 12px;
+            color: var(--text-secondary);
+            display: none;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        .comparison-section {
+            margin-top: 60px;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 40px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .badge-new {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .badge-popular {
+            background: var(--brand-gradient);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="ultimate-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="ultimate-cursor"></div>
+    <div class="ultimate-cursor-follower"></div>
+
+    <div class="pricing-container fade-in" style="position: relative; z-index: 10; padding-top: 120px;">
+        <!-- Header -->
+        <div class="pricing-header">
+            <h1>Choose Your Plan</h1>
+            <p style="font-size: 20px; color: var(--text-secondary);">
+                Start verifying truth today. Upgrade anytime.
+            </p>
+        </div>
+
+        <!-- Pricing Cards -->
+        <div class="pricing-grid">
+            <!-- Free Plan -->
+            <div class="pricing-card">
+                <div class="plan-name">Free</div>
+                <div class="plan-price">
+                    $0<span>/month</span>
+                </div>
+                <div class="plan-description">
+                    Perfect for trying out ProofLens AI
+                </div>
+
+                <ul class="plan-features">
+                    <li>10 verifications/month</li>
+                    <li>Text verification</li>
+                    <li>Image detection</li>
+                    <li>Basic reports</li>
+                    <li class="disabled">Video deepfake detection</li>
+                    <li class="disabled">Audio deepfake detection</li>
+                    <li class="disabled">URL reputation checker</li>
+                    <li class="disabled">Export reports (PDF/CSV)</li>
+                    <li class="disabled">Priority support</li>
+                </ul>
+
+                <button class="cta-button secondary" onclick="subscribePlan(1)">
+                    Get Started Free
+                </button>
+            </div>
+
+            <!-- Individual Plan -->
+            <div class="pricing-card featured">
+                <div class="plan-name">
+                    Individual 
+                    <span class="badge badge-popular">POPULAR</span>
+                </div>
+                <div class="plan-price">
+                    $9.99<span>/month</span>
+                </div>
+                <div class="plan-description">
+                    For professionals and content creators
+                </div>
+
+                <ul class="plan-features">
+                    <li>100 verifications/month</li>
+                    <li>All verification types</li>
+                    <li>Video deepfake detection</li>
+                    <li>Audio deepfake detection</li>
+                    <li>URL reputation checker</li>
+                    <li>Export reports (PDF/JSON/CSV)</li>
+                    <li>Advanced analytics</li>
+                    <li>Priority support</li>
+                    <li class="disabled">API access</li>
+                </ul>
+
+                <button class="cta-button primary" onclick="subscribePlan(2)">
+                    Subscribe Now
+                </button>
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="pricing-card">
+                <div class="plan-name">Enterprise</div>
+                <div class="plan-price">
+                    Custom<span></span>
+                </div>
+                <div class="plan-description">
+                    For organizations and large teams
+                </div>
+
+                <ul class="plan-features">
+                    <li>Unlimited verifications</li>
+                    <li>All verification types</li>
+                    <li>Full API access</li>
+                    <li>Bulk verification</li>
+                    <li>Custom integrations</li>
+                    <li>White-label options</li>
+                    <li>Dedicated support</li>
+                    <li>SLA guarantee</li>
+                    <li>Custom training</li>
+                </ul>
+
+                <button class="cta-button secondary" onclick="contactSales()">
+                    Contact Sales
+                </button>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section">
+            <h2 style="text-align: center; margin-bottom: 40px;">Frequently Asked Questions</h2>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    How do verifications work?
+                    <span>▼</span>
+                </div>
+                <div class="faq-answer">
+                    Each verification consumes 1 credit from your monthly allowance. Text, image, video, audio, and URL checks each count as one verification.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    Can I upgrade or downgrade my plan?
+                    <span>▼</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! You can upgrade or downgrade your plan at any time. Changes take effect at the start of your next billing cycle.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    What happens if I exceed my monthly limit?
+                    <span>▼</span>
+                </div>
+                <div class="faq-answer">
+                    You can purchase additional credit packages at any time. Or wait until your monthly credits reset on your renewal date.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    Is there a free trial for paid plans?
+                    <span>▼</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! Individual plan subscribers get a 14-day free trial with full access to all features. No credit card required to start.
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFAQ(this)">
+                <div class="faq-question">
+                    What payment methods do you accept?
+                    <span>▼</span>
+                </div>
+                <div class="faq-answer">
+                    We accept all major credit/debit cards, PayPal, and UPI (for India). Payments are securely processed through Razorpay.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="{{ url_for('static', filename='js/ultimate-interactions.js') }}"></script>
+    <script>
+        function toggleFAQ(element) {
+            element.classList.toggle('active');
+        }
+
+        function subscribePlan(planId) {
+            {% if current_user.is_authenticated %}
+                // Redirect to checkout
+                window.location.href = '/checkout/' + planId;
+            {% else %}
+                // Redirect to signup
+                alert('Please sign in or create an account to subscribe');
+                window.location.href = '{{ url_for("auth.signup") }}';
+            {% endif %}
+        }
+
+        function contactSales() {
+            window.location.href = '{{ url_for("contact") }}?subject=Enterprise Plan Inquiry';
+        }
+    </script>
+</body>
+</html>

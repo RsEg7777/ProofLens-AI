@@ -9,12 +9,18 @@ from datetime import datetime
 from flask_mail import Mail, Message
 from flask_login import LoginManager, current_user, login_required
 from config import Config
-from models import db, User, UserHistory, SavedArticle, VerificationResult, SearchQuery, ImageDetectionResult
+from models import db, User, UserHistory, SavedArticle, VerificationResult, SearchQuery, ImageDetectionResult, VideoDeepfakeResult, AudioDeepfakeResult, URLCheck
 from auth import auth as auth_blueprint
 from image_detector import ImageDetector, analyze_image_artifacts
 from source_data import get_source_info, get_bias_label, get_credibility_label, BIAS_COLORS, CREDIBILITY_COLORS
+from deepfake_detector import VideoDeepfakeDetector, AudioDeepfakeDetector, detect_deepfake
+from url_checker import URLReputationChecker, expand_shortened_url
+from export_reports import export_verification_report
+from credit_utils import requires_credits, CreditCost
 import os
 from werkzeug.utils import secure_filename
+from flask import send_file
+from io import BytesIO
 
 # Multilingual support imports
 try:
@@ -315,7 +321,59 @@ def extract_key_phrases_with_ollama(text):
 
 @app.route('/')
 def index():
-    return render_template('index.html', active_page='home')
+    return render_template('index_ultra.html')
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    """User dashboard with credits, subscription, and transaction history"""
+    try:
+        from credit_utils import get_user_credit_info
+        from datetime import datetime, timedelta
+        
+        # Get credit info
+        credit_info = get_user_credit_info(current_user.id)
+        
+        # Get total verifications
+        total_verifications = UserHistory.query.filter_by(
+            user_id=current_user.id
+        ).filter(
+            UserHistory.action_type.in_(['text_verified', 'meme_verified', 'image_detected', 'video_detected', 'audio_detected', 'url_checked'])
+        ).count()
+        
+        # Get this month's verifications
+        start_of_month = datetime.utcnow().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        verifications_this_month = UserHistory.query.filter_by(
+            user_id=current_user.id
+        ).filter(
+            UserHistory.action_type.in_(['text_verified', 'meme_verified', 'image_detected', 'video_detected', 'audio_detected', 'url_checked']),
+            UserHistory.created_at >= start_of_month
+        ).count()
+        
+        # Calculate credits used this month
+        from models import CreditTransaction
+        credits_used = CreditTransaction.query.filter_by(
+            user_id=current_user.id,
+            transaction_type='debit'
+        ).filter(
+            CreditTransaction.created_at >= start_of_month
+        ).all()
+        credits_used_this_month = sum(abs(t.amount) for t in credits_used)
+        
+        user_data = {
+            'credits': credit_info['credits'],
+            'subscription': credit_info['subscription'],
+            'transactions': credit_info['recent_transactions'],
+            'total_verifications': total_verifications,
+            'verifications_this_month': verifications_this_month,
+            'credits_used_this_month': credits_used_this_month
+        }
+        
+        return render_template('dashboard.html', user_data=user_data, active_page='dashboard')
+        
+    except Exception as e:
+        print(f"Error rendering dashboard: {str(e)}")
+        return redirect('/')
 
 @app.route('/diagrams')
 def diagrams():
@@ -1060,6 +1118,8 @@ def verify_text_with_llama(text, original_lang='en'):
     }
 
 @app.route('/verify_text', methods=['POST'])
+@login_required
+@requires_credits(credits_required=CreditCost.TEXT_VERIFICATION)
 def verify_text():
     """
     API endpoint to verify WhatsApp forwards, tweets, and social media text
@@ -1153,6 +1213,8 @@ def extract_text_from_image(image_bytes):
         return "", str(e)
 
 @app.route('/verify_meme', methods=['POST'])
+@login_required
+@requires_credits(credits_required=CreditCost.IMAGE_VERIFICATION)
 def verify_meme():
     """
     API endpoint to verify memes/quote images
@@ -1249,6 +1311,8 @@ def image_detection():
         return redirect('/')
 
 @app.route('/detect_image', methods=['POST'])
+@login_required
+@requires_credits(credits_required=CreditCost.IMAGE_VERIFICATION)
 def detect_image():
     try:
         # Check if image file is present
@@ -1267,10 +1331,9 @@ def detect_image():
         if file_ext not in allowed_extensions:
             return jsonify({'error': 'Invalid file type. Please upload an image (PNG, JPG, JPEG, GIF, WEBP)'}), 400
         
-        # Initialize image detector with SightEngine API
-        api_user = getattr(Config, 'SIGHTENGINE_API_USER', None)
-        api_secret = getattr(Config, 'SIGHTENGINE_API_SECRET', None)
-        detector = ImageDetector(api_user=api_user, api_secret=api_secret)
+        # Initialize image detector with Winston AI API
+        api_token = getattr(Config, 'WINSTON_AI_TOKEN', None)
+        detector = ImageDetector(api_token=api_token)
         
         # Detect AI-generated image
         detection_result = detector.detect_ai_image(image_file)
@@ -1317,6 +1380,476 @@ def detect_image():
             'error': 'Failed to process image',
             'details': str(e)
         }), 500
+
+# ============================================
+# VIDEO DEEPFAKE DETECTION ROUTES
+# ============================================
+
+@app.route('/video-detection')
+def video_detection():
+    """Video deepfake detection page"""
+    try:
+        return render_template('video_detection.html', active_page='video-detection')
+    except Exception as e:
+        print(f"Error rendering video detection page: {str(e)}")
+        return redirect('/')
+
+@app.route('/detect_video', methods=['POST'])
+@login_required
+@requires_credits(credits_required=CreditCost.VIDEO_VERIFICATION)
+def detect_video():
+    """Detect if uploaded video is a deepfake"""
+    try:
+        # Check if video file is present
+        if 'video' not in request.files:
+            return jsonify({'error': 'No video file provided'}), 400
+        
+        video_file = request.files['video']
+        
+        if video_file.filename == '':
+            return jsonify({'error': 'No video selected'}), 400
+        
+        # Validate file type
+        allowed_extensions = {'mp4', 'avi', 'mov', 'mkv', 'webm'}
+        file_ext = video_file.filename.rsplit('.', 1)[1].lower() if '.' in video_file.filename else ''
+        
+        if file_ext not in allowed_extensions:
+            return jsonify({'error': 'Invalid file type. Please upload a video (MP4, AVI, MOV, MKV, WEBM)'}), 400
+        
+        # Detect deepfake using Arya.ai
+        detector = VideoDeepfakeDetector()
+        detection_result = detector.detect_video_deepfake(video_file)
+        
+        # Store result in database if user is logged in
+        if current_user.is_authenticated:
+            filename = secure_filename(video_file.filename)
+            
+            detection_record = VideoDeepfakeResult(
+                user_id=current_user.id,
+                video_filename=filename,
+                is_deepfake=detection_result['is_deepfake'],
+                confidence_score=int(detection_result['confidence']),
+                status=detection_result['status'],
+                manipulation_type=detection_result.get('manipulation_type', 'Unknown')
+            )
+            
+            detection_record.set_reasons(detection_result.get('reasons', []))
+            db.session.add(detection_record)
+            
+            # Add to user history
+            history_entry = UserHistory(
+                user_id=current_user.id,
+                action_type='video_detected',
+                action_details=f'Video deepfake detection: {detection_result["status"]} (confidence: {detection_result["confidence"]}%)',
+                article_title=f'Video: {filename}'
+            )
+            db.session.add(history_entry)
+            db.session.commit()
+        
+        return jsonify(detection_result), 200
+        
+    except Exception as e:
+        print(f"Error in detect_video endpoint: {str(e)}")
+        return jsonify({
+            'error': 'Failed to process video',
+            'details': str(e)
+        }), 500
+
+# ============================================
+# AUDIO DEEPFAKE DETECTION ROUTES
+# ============================================
+
+@app.route('/audio-detection')
+def audio_detection():
+    """Audio deepfake detection page"""
+    try:
+        return render_template('audio_detection.html', active_page='audio-detection')
+    except Exception as e:
+        print(f"Error rendering audio detection page: {str(e)}")
+        return redirect('/')
+
+@app.route('/detect_audio', methods=['POST'])
+@login_required
+@requires_credits(credits_required=CreditCost.AUDIO_VERIFICATION)
+def detect_audio():
+    """Detect if uploaded audio is a deepfake"""
+    try:
+        # Check if audio file is present
+        if 'audio' not in request.files:
+            return jsonify({'error': 'No audio file provided'}), 400
+        
+        audio_file = request.files['audio']
+        
+        if audio_file.filename == '':
+            return jsonify({'error': 'No audio selected'}), 400
+        
+        # Validate file type
+        allowed_extensions = {'mp3', 'wav', 'm4a', 'ogg', 'flac'}
+        file_ext = audio_file.filename.rsplit('.', 1)[1].lower() if '.' in audio_file.filename else ''
+        
+        if file_ext not in allowed_extensions:
+            return jsonify({'error': 'Invalid file type. Please upload an audio file (MP3, WAV, M4A, OGG, FLAC)'}), 400
+        
+        # Detect deepfake using Arya.ai
+        detector = AudioDeepfakeDetector()
+        detection_result = detector.detect_audio_deepfake(audio_file)
+        
+        # Store result in database if user is logged in
+        if current_user.is_authenticated:
+            filename = secure_filename(audio_file.filename)
+            
+            detection_record = AudioDeepfakeResult(
+                user_id=current_user.id,
+                audio_filename=filename,
+                is_deepfake=detection_result['is_deepfake'],
+                confidence_score=int(detection_result['confidence']),
+                status=detection_result['status'],
+                manipulation_type=detection_result.get('manipulation_type', 'Unknown')
+            )
+            
+            detection_record.set_reasons(detection_result.get('reasons', []))
+            db.session.add(detection_record)
+            
+            # Add to user history
+            history_entry = UserHistory(
+                user_id=current_user.id,
+                action_type='audio_detected',
+                action_details=f'Audio deepfake detection: {detection_result["status"]} (confidence: {detection_result["confidence"]}%)',
+                article_title=f'Audio: {filename}'
+            )
+            db.session.add(history_entry)
+            db.session.commit()
+        
+        return jsonify(detection_result), 200
+        
+    except Exception as e:
+        print(f"Error in detect_audio endpoint: {str(e)}")
+        return jsonify({
+            'error': 'Failed to process audio',
+            'details': str(e)
+        }), 500
+
+# ============================================
+# URL REPUTATION CHECKER ROUTES
+# ============================================
+
+@app.route('/url-checker')
+def url_checker():
+    """URL reputation checker page"""
+    try:
+        return render_template('url_checker.html', active_page='url-checker')
+    except Exception as e:
+        print(f"Error rendering URL checker page: {str(e)}")
+        return redirect('/')
+
+@app.route('/check_url', methods=['POST'])
+@login_required
+@requires_credits(credits_required=CreditCost.URL_CHECK)
+def check_url():
+    """Check URL reputation using VirusTotal"""
+    try:
+        data = request.get_json()
+        url = data.get('url', '')
+        
+        if not url:
+            return jsonify({'error': 'No URL provided'}), 400
+        
+        # Expand shortened URLs if needed
+        if any(short in url.lower() for short in ['bit.ly', 'tinyurl', 'goo.gl', 't.co']):
+            expanded_url = expand_shortened_url(url)
+            if expanded_url != url:
+                print(f"Expanded URL: {url} -> {expanded_url}")
+                url = expanded_url
+        
+        # Check URL reputation
+        checker = URLReputationChecker()
+        result = checker.check_url(url)
+        
+        # Store result in database if user is logged in
+        if current_user.is_authenticated:
+            url_check = URLCheck(
+                user_id=current_user.id,
+                url=url,
+                is_safe=result['is_safe'],
+                threat_score=result['threat_score']
+            )
+            
+            url_check.set_categories(result.get('categories', []))
+            url_check.set_threats(result.get('threats', []))
+            db.session.add(url_check)
+            
+            # Add to user history
+            history_entry = UserHistory(
+                user_id=current_user.id,
+                action_type='url_checked',
+                action_details=f'URL check: {result["status"]} (threat score: {result["threat_score"]}%)',
+                article_url=url,
+                article_title=f'URL: {url[:50]}...'
+            )
+            db.session.add(history_entry)
+            db.session.commit()
+        
+        return jsonify(result), 200
+        
+    except Exception as e:
+        print(f"Error in check_url endpoint: {str(e)}")
+        return jsonify({
+            'error': 'Failed to check URL',
+            'details': str(e)
+        }), 500
+
+# ============================================
+# PRICING AND SUBSCRIPTION ROUTES
+# ============================================
+
+@app.route('/pricing')
+def pricing():
+    """Pricing and subscription plans page"""
+    try:
+        return render_template('pricing.html', active_page='pricing')
+    except Exception as e:
+        print(f"Error rendering pricing page: {str(e)}")
+        return redirect('/')
+
+@app.route('/checkout/<int:plan_id>')
+@login_required
+def checkout(plan_id):
+    """Checkout page for subscription purchase"""
+    try:
+        from models import SubscriptionPlan
+        plan = SubscriptionPlan.query.get_or_404(plan_id)
+        
+        if not plan.is_active:
+            flash('This plan is not available', 'error')
+            return redirect(url_for('pricing'))
+        
+        return render_template('checkout.html', 
+                             plan=plan,
+                             razorpay_key_id=Config.RAZORPAY_KEY_ID,
+                             active_page='pricing')
+    except Exception as e:
+        print(f"Error rendering checkout page: {str(e)}")
+        flash('An error occurred', 'error')
+        return redirect(url_for('pricing'))
+
+@app.route('/api/subscription/create-order', methods=['POST'])
+@login_required
+def create_subscription_order():
+    """Create Razorpay order for subscription"""
+    try:
+        from payment_handler import RazorpayHandler
+        
+        data = request.get_json()
+        plan_id = data.get('plan_id')
+        
+        if not plan_id:
+            return jsonify({'success': False, 'error': 'Plan ID required'}), 400
+        
+        handler = RazorpayHandler()
+        result = handler.create_subscription_order(current_user.id, plan_id)
+        
+        if result:
+            return jsonify({
+                'success': True,
+                'order': result['order'],
+                'plan': result['plan']
+            }), 200
+        else:
+            return jsonify({'success': False, 'error': 'Failed to create order'}), 400
+            
+    except Exception as e:
+        print(f"Error creating subscription order: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/subscription/verify-payment', methods=['POST'])
+@login_required
+def verify_subscription_payment():
+    """Verify Razorpay payment and activate subscription"""
+    try:
+        from payment_handler import RazorpayHandler
+        
+        data = request.get_json()
+        payment_id = data.get('razorpay_payment_id')
+        order_id = data.get('razorpay_order_id')
+        signature = data.get('razorpay_signature')
+        plan_id = data.get('plan_id')
+        
+        if not all([payment_id, order_id, signature, plan_id]):
+            return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+        
+        handler = RazorpayHandler()
+        
+        # Verify payment signature
+        if not handler.verify_payment_signature(payment_id, order_id, signature):
+            return jsonify({'success': False, 'error': 'Invalid payment signature'}), 400
+        
+        # Activate subscription
+        result = handler.activate_paid_subscription(current_user.id, plan_id, payment_id, order_id)
+        
+        if result:
+            # Add to user history
+            history_entry = UserHistory(
+                user_id=current_user.id,
+                action_type='subscription_activated',
+                action_details=f'Subscribed to {result["plan_name"]} plan'
+            )
+            db.session.add(history_entry)
+            db.session.commit()
+            
+            return jsonify({
+                'success': True,
+                'subscription': result
+            }), 200
+        else:
+            return jsonify({'success': False, 'error': 'Failed to activate subscription'}), 400
+            
+    except Exception as e:
+        print(f"Error verifying payment: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/subscription/activate-free', methods=['POST'])
+@login_required
+def activate_free_subscription():
+    """Activate free subscription plan"""
+    try:
+        from payment_handler import RazorpayHandler
+        
+        data = request.get_json()
+        plan_id = data.get('plan_id')
+        
+        if not plan_id:
+            return jsonify({'success': False, 'error': 'Plan ID required'}), 400
+        
+        handler = RazorpayHandler()
+        result = handler.activate_free_subscription(current_user.id, plan_id)
+        
+        if result:
+            # Add to user history
+            history_entry = UserHistory(
+                user_id=current_user.id,
+                action_type='subscription_activated',
+                action_details=f'Activated {result["plan_name"]} plan'
+            )
+            db.session.add(history_entry)
+            db.session.commit()
+            
+            return jsonify({
+                'success': True,
+                'subscription': result
+            }), 200
+        else:
+            return jsonify({'success': False, 'error': 'Invalid plan or already subscribed'}), 400
+            
+    except Exception as e:
+        print(f"Error activating free subscription: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/subscription/cancel', methods=['POST'])
+@login_required
+def cancel_subscription():
+    """Cancel active subscription"""
+    try:
+        from payment_handler import RazorpayHandler
+        
+        handler = RazorpayHandler()
+        success = handler.cancel_subscription(current_user.id)
+        
+        if success:
+            # Add to user history
+            history_entry = UserHistory(
+                user_id=current_user.id,
+                action_type='subscription_cancelled',
+                action_details='Subscription cancelled'
+            )
+            db.session.add(history_entry)
+            db.session.commit()
+            
+            return jsonify({
+                'success': True,
+                'message': 'Subscription cancelled successfully'
+            }), 200
+        else:
+            return jsonify({'success': False, 'error': 'No active subscription found'}), 400
+            
+    except Exception as e:
+        print(f"Error cancelling subscription: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/subscription/status')
+@login_required
+def subscription_status():
+    """Get current subscription status"""
+    try:
+        from payment_handler import RazorpayHandler
+        
+        handler = RazorpayHandler()
+        subscription = handler.get_user_subscription(current_user.id)
+        
+        return jsonify({
+            'success': True,
+            'subscription': subscription,
+            'credits': current_user.credits
+        }), 200
+            
+    except Exception as e:
+        print(f"Error getting subscription status: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ============================================
+# EXPORT ROUTES
+# ============================================
+
+@app.route('/export/<format>/<int:verification_id>')
+@login_required
+def export_report(format, verification_id):
+    """Export verification report in specified format"""
+    try:
+        # Get verification result from database
+        verification = VerificationResult.query.filter_by(
+            id=verification_id,
+            user_id=current_user.id
+        ).first_or_404()
+        
+        # Prepare data for export
+        export_data = {
+            'id': verification.id,
+            'type': 'Text Verification',
+            'original_text': verification.original_text,
+            'authenticity_score': verification.authenticity_score,
+            'key_findings': verification.get_key_findings(),
+            'differences': verification.get_differences(),
+            'supporting_evidence': verification.get_supporting_evidence(),
+            'score_breakdown': verification.get_score_breakdown(),
+            'verified_at': verification.verified_at.isoformat()
+        }
+        
+        # Generate report
+        report_bytes = export_verification_report(export_data, format)
+        
+        # Set appropriate MIME type and filename
+        if format.lower() == 'pdf':
+            mimetype = 'application/pdf'
+            filename = f'prooflens_report_{verification_id}.pdf'
+        elif format.lower() == 'json':
+            mimetype = 'application/json'
+            filename = f'prooflens_report_{verification_id}.json'
+        elif format.lower() == 'csv':
+            mimetype = 'text/csv'
+            filename = f'prooflens_report_{verification_id}.csv'
+        else:
+            return jsonify({'error': 'Invalid format'}), 400
+        
+        # Create BytesIO object and send file
+        return send_file(
+            BytesIO(report_bytes),
+            mimetype=mimetype,
+            as_attachment=True,
+            download_name=filename
+        )
+        
+    except Exception as e:
+        print(f"Error exporting report: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000,debug=True)

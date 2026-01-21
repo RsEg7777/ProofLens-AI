@@ -13,14 +13,23 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False, index=True)
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
-    password_hash = db.Column(db.String(528), nullable=False)
+    password_hash = db.Column(db.String(528), nullable=True)  # Nullable for OAuth users
     created_at = db.Column(db.DateTime, default=datetime.utcnow())
     is_active = db.Column(db.Boolean, default=True)
+    
+    # OAuth fields
+    oauth_provider = db.Column(db.String(50), nullable=True)  # 'google', 'facebook', etc.
+    oauth_id = db.Column(db.String(255), nullable=True)  # OAuth provider user ID
+    
+    # Credits and subscription
+    credits = db.Column(db.Integer, default=10)  # Free tier starts with 10 credits
+    subscription_id = db.Column(db.Integer, db.ForeignKey('user_subscriptions.id'), nullable=True)
     
     # Relationships
     history = db.relationship('UserHistory', backref='user', lazy='dynamic')
     saved_articles = db.relationship('SavedArticle', backref='user', lazy='dynamic')
     verifications = db.relationship('VerificationResult', backref='user', lazy='dynamic')
+    subscription = db.relationship('UserSubscription', foreign_keys=[subscription_id], backref='subscribed_user', uselist=False)
     
     def __init__(self, username, email, password):
         self.username = username
@@ -163,4 +172,135 @@ class ImageDetectionResult(db.Model):
     
     def __repr__(self):
         return f'<ImageDetectionResult id={self.id} status="{self.status}" confidence={self.confidence_score}>'
+
+
+class VideoDeepfakeResult(db.Model):
+    __tablename__ = 'video_deepfake_results'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    video_filename = db.Column(db.String(255), nullable=True)
+    is_deepfake = db.Column(db.Boolean, nullable=False)
+    confidence_score = db.Column(db.Integer, nullable=False)  # 0-100
+    status = db.Column(db.String(50), nullable=False)
+    manipulation_type = db.Column(db.String(100), nullable=True)
+    reasons = db.Column(db.Text, nullable=True)  # Stored as JSON
+    detected_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def set_reasons(self, reasons_list):
+        self.reasons = json.dumps(reasons_list)
+    
+    def get_reasons(self):
+        return json.loads(self.reasons) if self.reasons else []
+    
+    def __repr__(self):
+        return f'<VideoDeepfakeResult id={self.id} status="{self.status}" confidence={self.confidence_score}>'
+
+
+class AudioDeepfakeResult(db.Model):
+    __tablename__ = 'audio_deepfake_results'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    audio_filename = db.Column(db.String(255), nullable=True)
+    is_deepfake = db.Column(db.Boolean, nullable=False)
+    confidence_score = db.Column(db.Integer, nullable=False)  # 0-100
+    status = db.Column(db.String(50), nullable=False)
+    manipulation_type = db.Column(db.String(100), nullable=True)
+    reasons = db.Column(db.Text, nullable=True)  # Stored as JSON
+    detected_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def set_reasons(self, reasons_list):
+        self.reasons = json.dumps(reasons_list)
+    
+    def get_reasons(self):
+        return json.loads(self.reasons) if self.reasons else []
+    
+    def __repr__(self):
+        return f'<AudioDeepfakeResult id={self.id} status="{self.status}" confidence={self.confidence_score}>'
+
+
+class SubscriptionPlan(db.Model):
+    __tablename__ = 'subscription_plans'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)  # Free, Individual, Enterprise
+    price = db.Column(db.Float, nullable=False)  # Monthly price in USD
+    credits_per_month = db.Column(db.Integer, nullable=False)
+    features = db.Column(db.Text, nullable=True)  # Stored as JSON
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def set_features(self, features_list):
+        self.features = json.dumps(features_list)
+    
+    def get_features(self):
+        return json.loads(self.features) if self.features else []
+    
+    def __repr__(self):
+        return f'<SubscriptionPlan {self.name} - ${self.price}/mo>'
+
+
+class UserSubscription(db.Model):
+    __tablename__ = 'user_subscriptions'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    plan_id = db.Column(db.Integer, db.ForeignKey('subscription_plans.id'), nullable=False)
+    status = db.Column(db.String(20), nullable=False)  # active, cancelled, expired, trial
+    stripe_subscription_id = db.Column(db.String(255), nullable=True)
+    current_period_start = db.Column(db.DateTime, nullable=True)
+    current_period_end = db.Column(db.DateTime, nullable=True)
+    cancel_at_period_end = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    plan = db.relationship('SubscriptionPlan', backref='subscriptions')
+    
+    def __repr__(self):
+        return f'<UserSubscription user={self.user_id} plan={self.plan_id} status={self.status}>'
+
+
+class CreditTransaction(db.Model):
+    __tablename__ = 'credit_transactions'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    amount = db.Column(db.Integer, nullable=False)  # Positive for credits added, negative for used
+    transaction_type = db.Column(db.String(50), nullable=False)  # purchase, subscription, usage, refund
+    description = db.Column(db.String(255), nullable=True)
+    stripe_payment_id = db.Column(db.String(255), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<CreditTransaction user={self.user_id} amount={self.amount} type={self.transaction_type}>'
+
+
+class URLCheck(db.Model):
+    __tablename__ = 'url_checks'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    url = db.Column(db.String(2048), nullable=False)
+    is_safe = db.Column(db.Boolean, nullable=False)
+    threat_score = db.Column(db.Integer, nullable=False)  # 0-100
+    categories = db.Column(db.Text, nullable=True)  # Stored as JSON
+    threats_found = db.Column(db.Text, nullable=True)  # Stored as JSON
+    checked_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def set_categories(self, categories_list):
+        self.categories = json.dumps(categories_list)
+    
+    def get_categories(self):
+        return json.loads(self.categories) if self.categories else []
+    
+    def set_threats(self, threats_list):
+        self.threats_found = json.dumps(threats_list)
+    
+    def get_threats(self):
+        return json.loads(self.threats_found) if self.threats_found else []
+    
+    def __repr__(self):
+        return f'<URLCheck url={self.url[:50]} safe={self.is_safe}>'
 

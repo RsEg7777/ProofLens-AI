@@ -1,9 +1,11 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, session
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import User, UserHistory, db, SavedArticle, VerificationResult, SearchQuery
+from models import User, UserHistory, db, SavedArticle, VerificationResult, SearchQuery, CreditTransaction
 import json
 from datetime import datetime
+import requests
+from config import Config
 
 auth = Blueprint('auth', __name__)
 
@@ -201,3 +203,124 @@ def profile():
                            verified_count=verified_count,
                            saved_count=saved_count,
                            total_contributions=total_contributions)
+
+# ============================================
+# GOOGLE OAUTH ROUTES
+# ============================================
+
+@auth.route('/google')
+def google_login():
+    """Initiate Google OAuth flow"""
+    # Google OAuth endpoints
+    google_auth_url = 'https://accounts.google.com/o/oauth2/v2/auth'
+    
+    # OAuth parameters
+    params = {
+        'client_id': Config.GOOGLE_OAUTH_CLIENT_ID,
+        'redirect_uri': url_for('auth.google_callback', _external=True),
+        'scope': 'openid email profile',
+        'response_type': 'code',
+        'access_type': 'offline',
+        'prompt': 'select_account'
+    }
+    
+    # Build authorization URL
+    from urllib.parse import urlencode
+    auth_url = f"{google_auth_url}?{urlencode(params)}"
+    
+    return redirect(auth_url)
+
+@auth.route('/google/callback')
+def google_callback():
+    """Handle Google OAuth callback"""
+    try:
+        # Get authorization code
+        code = request.args.get('code')
+        
+        if not code:
+            flash('Authorization failed. Please try again.')
+            return redirect(url_for('auth.login'))
+        
+        # Exchange code for tokens
+        token_url = 'https://oauth2.googleapis.com/token'
+        token_data = {
+            'code': code,
+            'client_id': Config.GOOGLE_OAUTH_CLIENT_ID,
+            'client_secret': Config.GOOGLE_OAUTH_CLIENT_SECRET,
+            'redirect_uri': url_for('auth.google_callback', _external=True),
+            'grant_type': 'authorization_code'
+        }
+        
+        token_response = requests.post(token_url, data=token_data)
+        token_json = token_response.json()
+        
+        if 'error' in token_json:
+            flash('Failed to authenticate with Google')
+            return redirect(url_for('auth.login'))
+        
+        # Get user info
+        access_token = token_json.get('access_token')
+        user_info_url = 'https://www.googleapis.com/oauth2/v2/userinfo'
+        headers = {'Authorization': f'Bearer {access_token}'}
+        
+        user_info_response = requests.get(user_info_url, headers=headers)
+        user_info = user_info_response.json()
+        
+        # Extract user data
+        google_id = user_info.get('id')
+        email = user_info.get('email')
+        name = user_info.get('name', email.split('@')[0])
+        
+        # Check if user exists
+        user = User.query.filter_by(email=email).first()
+        
+        if user:
+            # Update OAuth info if not set
+            if not user.oauth_provider:
+                user.oauth_provider = 'google'
+                user.oauth_id = google_id
+                db.session.commit()
+        else:
+            # Create new user
+            user = User(
+                username=name,
+                email=email,
+                password='oauth_user_no_password'  # OAuth users don't need password
+            )
+            user.oauth_provider = 'google'
+            user.oauth_id = google_id
+            user.password_hash = None  # OAuth users don't have password
+            
+            db.session.add(user)
+            
+            # Give welcome bonus credits
+            welcome_credits = CreditTransaction(
+                user_id=user.id,
+                amount=10,
+                transaction_type='subscription',
+                description='Welcome bonus - Free tier credits'
+            )
+            db.session.add(welcome_credits)
+            
+            db.session.commit()
+            
+            flash('Account created successfully! Welcome to ProofLens AI.')
+        
+        # Log user in
+        login_user(user, remember=True)
+        
+        # Add login history
+        history_entry = UserHistory(
+            user_id=user.id,
+            action_type='login',
+            action_details=f'Logged in via Google OAuth'
+        )
+        db.session.add(history_entry)
+        db.session.commit()
+        
+        return redirect(url_for('index'))
+        
+    except Exception as e:
+        print(f"Google OAuth error: {str(e)}")
+        flash('An error occurred during Google sign-in. Please try again.')
+        return redirect(url_for('auth.login'))
