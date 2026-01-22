@@ -1042,6 +1042,15 @@ def text_verification():
         print(f"Error rendering text verification page: {str(e)}")
         return redirect('/')
 
+@app.route('/news-verification')
+def news_verification():
+    """Page for verifying news articles with cross-referencing"""
+    try:
+        return render_template('news_verification.html', active_page='news-verification')
+    except Exception as e:
+        print(f"Error rendering news verification page: {str(e)}")
+        return redirect('/')
+
 def verify_text_with_llama(text, original_lang='en'):
     """
     Verify credibility of social media text/WhatsApp forwards using Llama 3.2

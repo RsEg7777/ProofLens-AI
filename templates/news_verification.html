@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Verification - ProofLens AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/shared.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ultimate-design-system.css') }}">
+    <style>
+        body {
+            padding: 120px 20px 140px;
+            min-height: 100vh;
+        }
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .page-title {
+            font-size: clamp(40px, 6vw, 64px);
+            font-weight: 900;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200%;
+            animation: gradientShift 3s ease infinite;
+            margin-bottom: 16px;
+        }
+        .page-subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .ultimate-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        .ultimate-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.4);
+            background: rgba(255,255,255,0.05);
+        }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        #loading-section {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        #loading-section.visible {
+            display: block;
+        }
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        #results-section {
+            margin-top: 40px;
+            display: none;
+        }
+        #results-section.visible {
+            display: block;
+        }
+        .result-card {
+            padding: 30px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            margin-bottom: 20px;
+        }
+        .result-card h3 {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        .news-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            border-color: var(--primary);
+        }
+        .news-card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: rgba(255,255,255,0.05);
+        }
+        .news-card-content {
+            padding: 20px;
+        }
+        .news-card-title {
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .news-card-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .news-card-source {
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+        .news-card-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .news-card-link:hover {
+            color: var(--light);
+        }
+        .source-transparency {
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+        .transparency-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .bias-badge, .credibility-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .source-description {
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.5;
+            display: flex;
+            align-items: start;
+            gap: 8px;
+        }
+        .analyze-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .authenticity-score {
+            font-size: 72px;
+            font-weight: 900;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 20px 0;
+        }
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .analysis-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 25px;
+        }
+        .analysis-card h4 {
+            color: var(--text-primary);
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .analysis-list {
+            list-style: none;
+            padding: 0;
+        }
+        .analysis-list li {
+            color: var(--text-secondary);
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            line-height: 1.6;
+        }
+        .analysis-list li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="ultimate-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="ultimate-cursor"></div>
+    <div class="ultimate-cursor-follower"></div>
+
+    <!-- Global Navbar -->
+    {% include 'components/navbar.html' %}
+
+    <!-- Tool Navigation -->
+    {% include 'components/tool_nav.html' %}
+
+    <!-- Main Content -->
+    <div class="tool-container">
+        <div class="page-header" data-aos="fade-up">
+            <h1 class="page-title">News Verification</h1>
+            <p class="page-subtitle">Verify news authenticity by cross-referencing with trusted sources using AI-powered analysis</p>
+        </div>
+
+        <div class="ultimate-card" data-aos="fade-up" data-aos-delay="200">
+            <form id="newsForm">
+                <textarea id="news-input" class="ultimate-textarea" required placeholder="Paste your news article or headline here..."></textarea>
+                <div class="action-buttons">
+                    <button type="button" id="extract-button" class="ultimate-btn ultimate-btn-secondary">
+                        <i class="fas fa-robot"></i> Extract Key Points
+                    </button>
+                    <button type="submit" id="search-button" class="ultimate-btn ultimate-btn-primary">
+                        <i class="fas fa-search"></i> Verify News
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Loading Section -->
+        <div id="loading-section">
+            <div class="loading-spinner"></div>
+            <p style="color: var(--text-secondary);">Analyzing news article and searching trusted sources...</p>
+        </div>
+
+        <!-- Extracted Headlines Section -->
+        <div id="headlines-section" style="display: none; margin-top: 30px;" data-aos="fade-up">
+            <div class="result-card">
+                <h3><i class="fas fa-lightbulb"></i> Extracted Key Points</h3>
+                <ul id="headlines-list" class="analysis-list"></ul>
+            </div>
+        </div>
+
+        <!-- Search Results Section -->
+        <div id="results-section">
+            <div id="results-container"></div>
+            
+            <!-- Analyze Authenticity Section -->
+            <div id="analyze-section" class="analyze-section" style="display: none;">
+                <div class="result-card">
+                    <button id="analyze-button" class="ultimate-btn ultimate-btn-primary ultimate-btn-large">
+                        <i class="fas fa-microscope"></i> Analyze Authenticity
+                    </button>
+                </div>
+            </div>
+
+            <!-- Analysis Results -->
+            <div id="analysis-results" style="display: none;">
+                <div class="result-card" data-aos="fade-up">
+                    <h3><i class="fas fa-shield-alt"></i> Authenticity Analysis</h3>
+                    <div class="authenticity-score" id="authenticity-score">0%</div>
+                    <div class="analysis-grid">
+                        <div class="analysis-card">
+                            <h4><i class="fas fa-search"></i> Key Findings</h4>
+                            <ul id="key-findings-list" class="analysis-list"></ul>
+                        </div>
+                        <div class="analysis-card">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Discrepancies</h4>
+                            <ul id="differences-list" class="analysis-list"></ul>
+                        </div>
+                        <div class="analysis-card">
+                            <h4><i class="fas fa-check-circle"></i> Supporting Evidence</h4>
+                            <ul id="evidence-list" class="analysis-list"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="{{ url_for('static', filename='js/ultimate-interactions.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/utils/NavBar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/utils/themeToggle.js') }}"></script>
+    <script>
+        AOS.init({ duration: 800, once: true });
+
+        let currentNews = '';
+        let verifiedArticles = [];
+
+        // Extract key points
+        document.getElementById('extract-button').addEventListener('click', async function() {
+            const newsInput = document.getElementById('news-input').value.trim();
+            if (!newsInput) {
+                alert('Please enter some text to analyze');
+                return;
+            }
+
+            currentNews = newsInput;
+            const button = this;
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Extracting...';
+
+            try {
+                const response = await fetch('/extract', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ news: newsInput })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.key_phrases && data.key_phrases.news_headline) {
+                    const headlinesList = document.getElementById('headlines-list');
+                    headlinesList.innerHTML = '';
+                    
+                    data.key_phrases.news_headline.forEach(headline => {
+                        const li = document.createElement('li');
+                        li.textContent = headline;
+                        headlinesList.appendChild(li);
+                    });
+                    
+                    document.getElementById('headlines-section').style.display = 'block';
+                    AOS.refresh();
+                } else {
+                    alert('Failed to extract headlines. Please try again.');
+                }
+            } catch (error) {
+                alert('Error extracting headlines: ' + error.message);
+            } finally {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-robot"></i> Extract Key Points';
+            }
+        });
+
+        // Verify news
+        document.getElementById('newsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const newsInput = document.getElementById('news-input').value.trim();
+            if (!newsInput) {
+                alert('Please enter some text to verify');
+                return;
+            }
+
+            currentNews = newsInput;
+            const searchButton = document.getElementById('search-button');
+            const loadingSection = document.getElementById('loading-section');
+            
+            searchButton.disabled = true;
+            searchButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+            loadingSection.classList.add('visible');
+
+            try {
+                // First extract headlines
+                const extractResponse = await fetch('/extract', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ news: newsInput })
+                });
+
+                const extractData = await extractResponse.json();
+                const headlines = extractData.key_phrases?.news_headline || [];
+
+                if (headlines.length === 0) {
+                    throw new Error('No headlines extracted');
+                }
+
+                // Then get search results
+                const resultsResponse = await fetch('/results', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ news: newsInput, headlines: headlines })
+                });
+
+                if (!resultsResponse.ok) {
+                    throw new Error('Failed to get search results');
+                }
+
+                const htmlContent = await resultsResponse.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlContent, 'text/html');
+                
+                // Extract results from the response
+                const resultsContainer = document.getElementById('results-container');
+                const searchResultsSection = doc.querySelector('.search-results');
+                
+                if (searchResultsSection) {
+                    resultsContainer.innerHTML = searchResultsSection.innerHTML;
+                    
+                    // Store articles for analysis
+                    verifiedArticles = Array.from(document.querySelectorAll('.news-card')).map(card => ({
+                        content: card.querySelector('.description')?.textContent || card.querySelector('.news-card-description')?.textContent || ''
+                    }));
+                    
+                    document.getElementById('results-section').classList.add('visible');
+                    document.getElementById('analyze-section').style.display = 'block';
+                    AOS.refresh();
+                } else {
+                    alert('No results found');
+                }
+
+            } catch (error) {
+                alert('Error verifying news: ' + error.message);
+            } finally {
+                searchButton.disabled = false;
+                searchButton.innerHTML = '<i class="fas fa-search"></i> Verify News';
+                loadingSection.classList.remove('visible');
+            }
+        });
+
+        // Analyze authenticity
+        document.getElementById('analyze-button').addEventListener('click', async function() {
+            const button = this;
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+
+            try {
+                const response = await fetch('/analyze_authenticity', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        original_news: currentNews,
+                        verified_articles: verifiedArticles
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Display authenticity score
+                    document.getElementById('authenticity-score').textContent = result.authenticity_score + '%';
+
+                    // Display key findings
+                    const findingsList = document.getElementById('key-findings-list');
+                    findingsList.innerHTML = '';
+                    (result.key_findings || []).forEach(finding => {
+                        const li = document.createElement('li');
+                        li.textContent = finding;
+                        findingsList.appendChild(li);
+                    });
+
+                    // Display differences
+                    const differencesList = document.getElementById('differences-list');
+                    differencesList.innerHTML = '';
+                    (result.differences || []).forEach(diff => {
+                        const li = document.createElement('li');
+                        li.textContent = diff;
+                        differencesList.appendChild(li);
+                    });
+
+                    // Display evidence
+                    const evidenceList = document.getElementById('evidence-list');
+                    evidenceList.innerHTML = '';
+                    (result.supporting_evidence || []).forEach(evidence => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<strong>"${evidence.quote}"</strong> - <em>${evidence.source}</em>`;
+                        evidenceList.appendChild(li);
+                    });
+
+                    document.getElementById('analysis-results').style.display = 'block';
+                    AOS.refresh();
+                } else {
+                    alert('Analysis failed. Please try again.');
+                }
+            } catch (error) {
+                alert('Error analyzing authenticity: ' + error.message);
+            } finally {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-microscope"></i> Analyze Authenticity';
+            }
+        });
+    </script>
+</body>
+</html>
