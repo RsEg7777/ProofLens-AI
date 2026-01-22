@@ -330,7 +330,7 @@ def extract_key_phrases_with_ollama(text):
 
 @app.route('/')
 def index():
-    return render_template('index_ultra.html')
+    return render_template('index_ultra.html', active_page='home')
 
 @app.route('/dashboard')
 @login_required

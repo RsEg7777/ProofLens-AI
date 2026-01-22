@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - ProofLens AI</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<title>Dashboard - ProofLens AI</title>
+    <!-- Shared layout + theme styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/shared.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
     <style>
         .dashboard-container {
@@ -268,7 +270,7 @@
     </style>
 </head>
 <body>
-    {% include 'includes/navbar.html' %}
+    {% include 'components/navbar.html' %}
     
     <div class="dashboard-container">
         <div class="dashboard-header">
@@ -436,6 +438,7 @@
         </div>
     </div>
     
+    <script src="{{ url_for('static', filename='js/utils/NavBar.js') }}"></script>
     <script src="{{ url_for('static', filename='js/utils/themeToggle.js') }}"></script>
     <script>
         async function cancelSubscription() {
