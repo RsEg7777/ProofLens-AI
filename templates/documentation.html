@@ -13,6 +13,10 @@
       href="{{ url_for('static', filename='css/shared.css') }}"
     />
     <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/theme.css') }}"
+    />
+    <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
@@ -527,6 +531,7 @@
 
     {% include 'components/footer.html' %}
     <script src="{{ url_for('static', filename='js/utils/NavBar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/utils/themeToggle.js') }}"></script>
   </body>
 </html>
 

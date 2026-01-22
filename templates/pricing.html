@@ -6,6 +6,8 @@
     <title>Pricing - ProofLens AI</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/shared.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/ultimate-design-system.css') }}">
     <style>
         .pricing-container {
@@ -233,7 +235,9 @@
     <div class="ultimate-cursor"></div>
     <div class="ultimate-cursor-follower"></div>
 
-    <div class="pricing-container fade-in" style="position: relative; z-index: 10; padding-top: 120px;">
+    {% include 'components/navbar.html' %}
+
+    <div class="pricing-container fade-in"
         <!-- Header -->
         <div class="pricing-header">
             <h1>Choose Your Plan</h1>
@@ -384,9 +388,11 @@
             </div>
         </div>
     </div>
-
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script src="{{ url_for('static', filename='js/ultimate-interactions.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/utils/NavBar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/utils/themeToggle.js') }}"></script>
     <script>
         function toggleFAQ(element) {
             element.classList.toggle('active');

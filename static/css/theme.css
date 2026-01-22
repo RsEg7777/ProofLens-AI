@@ -2,24 +2,24 @@
 /* Light and Dark mode with smooth transitions */
 
 :root {
-    /* Light Theme Colors */
+    /* Light Theme Colors - Pure Black & White */
     --bg-primary: #ffffff;
-    --bg-secondary: #f8f9fa;
-    --bg-tertiary: #e9ecef;
-    --text-primary: #1a1a1a;
-    --text-secondary: #4a5568;
-    --text-tertiary: #718096;
-    --border-color: #e2e8f0;
-    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --bg-secondary: #f5f5f5;
+    --bg-tertiary: #e8e8e8;
+    --text-primary: #000000;
+    --text-secondary: #333333;
+    --text-tertiary: #666666;
+    --border-color: #d0d0d0;
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.15);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.25);
     
-    /* Brand Colors */
-    --brand-primary: #6366f1;
-    --brand-primary-hover: #4f46e5;
-    --brand-secondary: #8b5cf6;
-    --brand-accent: #ec4899;
-    --brand-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+    /* Brand Colors - Light theme uses black for branding */
+    --brand-primary: #000000;
+    --brand-primary-hover: #333333;
+    --brand-secondary: #1a1a1a;
+    --brand-accent: #4a4a4a;
+    --brand-gradient: linear-gradient(135deg, #000000 0%, #333333 50%, #1a1a1a 100%);
     
     /* Semantic Colors */
     --success: #10b981;
@@ -41,18 +41,25 @@
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Dark Theme */
+/* Dark Theme - Enhanced Indigo/Blue Palette */
 [data-theme="dark"] {
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-tertiary: #334155;
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --text-tertiary: #94a3b8;
-    --border-color: #334155;
+    --bg-primary: #0a0e1a;
+    --bg-secondary: #131829;
+    --bg-tertiary: #1e2538;
+    --text-primary: #e0e7ff;
+    --text-secondary: #c7d2fe;
+    --text-tertiary: #a5b4fc;
+    --border-color: #3730a3;
     --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 0 10px rgba(99, 102, 241, 0.15);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.2);
+    
+    /* Enhanced Brand Colors for Dark Theme */
+    --brand-primary: #6366f1;
+    --brand-primary-hover: #818cf8;
+    --brand-secondary: #8b5cf6;
+    --brand-accent: #a78bfa;
+    --brand-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
     
     /* Adjust semantic colors for dark mode */
     --success-bg: #064e3b;
@@ -170,11 +177,13 @@
     }
 }
 
-/* Snow Theme Card Styles */
-[data-theme="snow"] .card {
-    background: linear-gradient(135deg, rgba(13, 31, 53, 0.9) 0%, rgba(19, 40, 66, 0.8) 100%);
-    border: 1px solid rgba(0, 212, 255, 0.2);
-    box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+/* Snow Theme Card Styles - Override feature cards too */
+[data-theme="snow"] .card,
+[data-theme="snow"] .feature-card,
+[data-theme="snow"] .tool-card {
+    background: linear-gradient(135deg, rgba(13, 31, 53, 0.9) 0%, rgba(19, 40, 66, 0.8) 100%) !important;
+    border: 1px solid rgba(0, 212, 255, 0.2) !important;
+    box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
     backdrop-filter: blur(10px);
     position: relative;
     overflow: hidden;
@@ -202,10 +211,12 @@
     transform: translateY(-4px);
 }
 
-/* Snow Theme Buttons */
-[data-theme="snow"] .btn-primary {
-    background: linear-gradient(135deg, #00d4ff 0%, #0891b2 100%);
-    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+/* Snow Theme Buttons - Override ALL button types */
+[data-theme="snow"] .btn-primary,
+[data-theme="snow"] .cta-btn,
+[data-theme="snow"] .ultimate-btn-primary {
+    background: linear-gradient(135deg, #00d4ff 0%, #0891b2 100%) !important;
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
     position: relative;
     overflow: hidden;
 }
@@ -306,14 +317,21 @@
     position: relative;
 }
 
+/* Override ALL hero and branding text to use cyan gradient in Snow theme */
+[data-theme="snow"] .hero h1,
 [data-theme="snow"] .hero-text h1,
-[data-theme="snow"] .hero-section h1 {
-    background: linear-gradient(90deg, #ffffff, #00d4ff, #7dd3fc, #ffffff);
-    background-size: 300% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: aurora-text 4s ease-in-out infinite;
+[data-theme="snow"] .hero-section h1,
+[data-theme="snow"] .hero-content h1,
+[data-theme="snow"] .logo,
+[data-theme="snow"] .ultimate-logo,
+[data-theme="snow"] .section-title,
+[data-theme="snow"] h1 {
+    background: linear-gradient(90deg, #ffffff, #00d4ff, #7dd3fc, #ffffff) !important;
+    background-size: 300% 100% !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    animation: aurora-text 4s ease-in-out infinite !important;
 }
 
 @keyframes aurora-text {
@@ -428,6 +446,547 @@
 [data-theme="snow"] ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, #00d4ff, #00b8e6);
     box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+/* Snow Theme - Additional overrides to remove ALL pink */
+[data-theme="snow"] .gradient-orb,
+[data-theme="snow"] .orb-1,
+[data-theme="snow"] .orb-2,
+[data-theme="snow"] .orb-3 {
+    opacity: 0.1 !important;
+    filter: blur(100px) hue-rotate(180deg) !important;
+}
+
+[data-theme="snow"] .float-element {
+    background: linear-gradient(135deg, #00d4ff, #0891b2) !important;
+    opacity: 0.15 !important;
+}
+
+[data-theme="snow"] .card-gradient,
+[data-theme="snow"] .gradient-bg {
+    background: linear-gradient(135deg, #00d4ff 0%, #0891b2 50%, #164e63 100%) !important;
+}
+
+[data-theme="snow"] .score-display {
+    background: linear-gradient(135deg, #00d4ff, #7dd3fc, #ffffff) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+/* Snow Theme - Feature Icons with cyan */
+[data-theme="snow"] .feature-icon {
+    background: linear-gradient(135deg, #00d4ff, #0891b2) !important;
+    box-shadow: 0 15px 40px rgba(0, 212, 255, 0.6) !important;
+}
+
+[data-theme="snow"] .feature-icon::before {
+    background: linear-gradient(135deg, #00d4ff, #7dd3fc) !important;
+}
+
+[data-theme="snow"] .feature-card:hover .feature-icon {
+    box-shadow: 0 25px 60px rgba(0, 212, 255, 0.9) !important;
+}
+
+/* Snow Theme - Stats Numbers with cyan gradient */
+[data-theme="snow"] .stat-number {
+    background: linear-gradient(90deg, #ffffff, #00d4ff, #7dd3fc, #ffffff) !important;
+    background-size: 300% 100% !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    filter: drop-shadow(0 0 25px rgba(0, 212, 255, 0.8)) !important;
+}
+
+/* Snow Theme - CTA Section with cyan gradient background */
+[data-theme="snow"] .cta-section {
+    background: linear-gradient(135deg, #00d4ff 0%, #0891b2 50%, #164e63 100%) !important;
+    box-shadow: 0 40px 100px rgba(0, 212, 255, 0.6) !important;
+}
+
+[data-theme="snow"] .cta-section::after {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(125, 211, 252, 0.15) 100%) !important;
+}
+
+/* Snow Theme - Showcase section elements */
+[data-theme="snow"] .showcase-content h3 {
+    background: linear-gradient(135deg, #00d4ff, #7dd3fc) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+[data-theme="snow"] .showcase-features li::before {
+    background: linear-gradient(135deg, #00d4ff, #0891b2) !important;
+}
+
+[data-theme="snow"] .showcase-visual::before {
+    background: linear-gradient(135deg, #00d4ff, #0891b2) !important;
+    opacity: 0.15 !important;
+}
+
+/* Snow Theme - Stats container */
+[data-theme="snow"] .stats {
+    background: rgba(10, 22, 40, 0.5) !important;
+    border: 1px solid rgba(0, 212, 255, 0.2) !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 212, 255, 0.2) !important;
+}
+
+/* ========================================
+   LIGHT THEME - Pure Black & White
+   ======================================== */
+
+/* Light theme body */
+[data-theme="light"] body {
+    background: #ffffff !important;
+    color: #000000 !important;
+}
+
+/* Light theme - Override hero and branding to use black */
+[data-theme="light"] .hero h1,
+[data-theme="light"] .hero-text h1,
+[data-theme="light"] .hero-section h1,
+[data-theme="light"] .hero-content h1,
+[data-theme="light"] .logo,
+[data-theme="light"] .ultimate-logo,
+[data-theme="light"] .section-title,
+[data-theme="light"] h1 {
+    background: linear-gradient(135deg, #000000 0%, #333333 50%, #1a1a1a 100%) !important;
+    background-size: 200% 100% !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    animation: gradientShift 3s ease infinite !important;
+}
+
+/* Light theme cards */
+[data-theme="light"] .card,
+[data-theme="light"] .feature-card,
+[data-theme="light"] .tool-card {
+    background: #f5f5f5 !important;
+    border: 2px solid #d0d0d0 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] .card:hover,
+[data-theme="light"] .feature-card:hover,
+[data-theme="light"] .tool-card:hover {
+    border-color: #000000 !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+    transform: translateY(-4px);
+}
+
+/* Light theme buttons */
+[data-theme="light"] .btn-primary,
+[data-theme="light"] .cta-btn,
+[data-theme="light"] .ultimate-btn-primary {
+    background: #000000 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="light"] .btn-primary:hover,
+[data-theme="light"] .cta-btn:hover,
+[data-theme="light"] .ultimate-btn-primary:hover {
+    background: #333333 !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Light theme - Remove gradient orbs */
+[data-theme="light"] .gradient-orb,
+[data-theme="light"] .orb-1,
+[data-theme="light"] .orb-2,
+[data-theme="light"] .orb-3,
+[data-theme="light"] .float-element {
+    opacity: 0 !important;
+    display: none !important;
+}
+
+/* Light theme navbar */
+[data-theme="light"] .navbar,
+[data-theme="light"] .ultimate-nav,
+[data-theme="light"] nav {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-bottom: 2px solid #d0d0d0 !important;
+    backdrop-filter: blur(10px);
+}
+
+[data-theme="light"] .navbar.scrolled,
+[data-theme="light"] .ultimate-nav.scrolled,
+[data-theme="light"] nav.scrolled {
+    background: rgba(255, 255, 255, 0.98) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Light theme score display */
+[data-theme="light"] .score-display {
+    background: linear-gradient(135deg, #000000, #333333) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+/* Light theme progress bar */
+[data-theme="light"] .progress-fill {
+    background: linear-gradient(90deg, #000000, #333333) !important;
+}
+
+/* Light theme scrollbar */
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+    background: #333333 !important;
+    border: 2px solid #ffffff !important;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+    background: #000000 !important;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-track {
+    background: #f5f5f5 !important;
+}
+
+/* ========================================
+   DARK THEME - Enhanced Indigo/Blue
+   ======================================== */
+
+/* Dark theme body enhancements */
+[data-theme="dark"] body {
+    background: linear-gradient(180deg, #0a0e1a 0%, #131829 50%, #1e2538 100%) !important;
+    background-attachment: fixed;
+}
+
+/* Dark theme - Enhanced hero and branding with indigo/purple gradient */
+[data-theme="dark"] .hero h1,
+[data-theme="dark"] .hero-text h1,
+[data-theme="dark"] .hero-section h1,
+[data-theme="dark"] .hero-content h1,
+[data-theme="dark"] .section-title {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%) !important;
+    background-size: 200% 100% !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    animation: gradientShift 4s ease infinite !important;
+    filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.4));
+}
+
+/* Dark theme logo */
+[data-theme="dark"] .logo,
+[data-theme="dark"] .ultimate-logo {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+    background-size: 200% 100% !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    animation: gradientShift 3s ease infinite !important;
+    filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.6));
+}
+
+/* Dark theme cards with indigo glow */
+[data-theme="dark"] .card,
+[data-theme="dark"] .feature-card,
+[data-theme="dark"] .tool-card {
+    background: linear-gradient(135deg, rgba(19, 24, 41, 0.8) 0%, rgba(30, 37, 56, 0.9) 100%) !important;
+    border: 1px solid rgba(99, 102, 241, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 20px rgba(99, 102, 241, 0.1) !important;
+    backdrop-filter: blur(10px);
+}
+
+[data-theme="dark"] .card:hover,
+[data-theme="dark"] .feature-card:hover,
+[data-theme="dark"] .tool-card:hover {
+    border-color: rgba(99, 102, 241, 0.5) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 40px rgba(99, 102, 241, 0.25) !important;
+    transform: translateY(-6px);
+}
+
+/* Dark theme buttons with indigo gradient */
+[data-theme="dark"] .btn-primary,
+[data-theme="dark"] .cta-btn,
+[data-theme="dark"] .ultimate-btn-primary {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .btn-primary:hover,
+[data-theme="dark"] .cta-btn:hover,
+[data-theme="dark"] .ultimate-btn-primary:hover {
+    box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6), 0 0 50px rgba(99, 102, 241, 0.3) !important;
+    transform: translateY(-3px);
+}
+
+/* Dark theme gradient orbs with indigo hues */
+[data-theme="dark"] .gradient-orb,
+[data-theme="dark"] .orb-1 {
+    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+    opacity: 0.35 !important;
+}
+
+[data-theme="dark"] .orb-2 {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important;
+    opacity: 0.3 !important;
+}
+
+[data-theme="dark"] .orb-3 {
+    background: linear-gradient(135deg, #a78bfa, #8b5cf6) !important;
+    opacity: 0.25 !important;
+}
+
+/* Dark theme navbar with indigo tint */
+[data-theme="dark"] .navbar,
+[data-theme="dark"] .ultimate-nav,
+[data-theme="dark"] nav {
+    background: rgba(10, 14, 26, 0.85) !important;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.2) !important;
+    backdrop-filter: blur(15px) saturate(180%);
+}
+
+[data-theme="dark"] .navbar.scrolled,
+[data-theme="dark"] .ultimate-nav.scrolled,
+[data-theme="dark"] nav.scrolled {
+    background: rgba(10, 14, 26, 0.95) !important;
+    box-shadow: 0 10px 40px rgba(99, 102, 241, 0.2) !important;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.3) !important;
+}
+
+/* Dark theme score display */
+[data-theme="dark"] .score-display {
+    background: linear-gradient(135deg, #6366f1, #a78bfa, #ffffff) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    text-shadow: 0 0 30px rgba(99, 102, 241, 0.5) !important;
+}
+
+/* Dark theme progress bar */
+[data-theme="dark"] .progress-fill {
+    background: linear-gradient(90deg, #6366f1, #8b5cf6, #6366f1) !important;
+    background-size: 200% 100%;
+    animation: progress-flow 2s linear infinite;
+}
+
+/* Dark theme scrollbar */
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #6366f1, #8b5cf6) !important;
+    border: 2px solid #0a0e1a !important;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #818cf8, #a78bfa) !important;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5) !important;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: #0a0e1a !important;
+}
+
+/* ========================================
+   CURSOR THEMING - Three Distinct Effects
+   ======================================== */
+
+/* Base cursor styles */
+.cursor,
+.ultimate-cursor {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease;
+    mix-blend-mode: difference;
+}
+
+.cursor-follower,
+.ultimate-cursor-follower {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.3s ease, width 0.2s ease, height 0.2s ease;
+}
+
+/* LIGHT THEME = Black Fluid Ripple */
+[data-theme="light"] .cursor,
+[data-theme="light"] .ultimate-cursor {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #000000;
+    background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 40%, transparent 70%);
+    box-shadow: 0 0 15px rgba(0,0,0,0.4), inset 0 0 10px rgba(0,0,0,0.2);
+    mix-blend-mode: normal;
+}
+
+[data-theme="light"] .cursor-follower,
+[data-theme="light"] .ultimate-cursor-follower {
+    width: 50px;
+    height: 50px;
+    border: 2px solid rgba(0,0,0,0.5);
+    background: radial-gradient(circle, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.08) 50%, transparent 80%);
+    box-shadow: 0 0 20px rgba(0,0,0,0.3), inset 0 0 15px rgba(0,0,0,0.15);
+    animation: light-ripple 2s ease-in-out infinite;
+}
+
+@keyframes light-ripple {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.15); opacity: 0.8; }
+}
+
+/* Hover effect for Light theme */
+[data-theme="light"] a:hover ~ .cursor,
+[data-theme="light"] button:hover ~ .cursor,
+[data-theme="light"] a:hover ~ .ultimate-cursor,
+[data-theme="light"] button:hover ~ .ultimate-cursor {
+    width: 32px;
+    height: 32px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,0,0,0.3);
+}
+
+/* DARK THEME = Rainbow Fluid */
+[data-theme="dark"] .cursor,
+[data-theme="dark"] .ultimate-cursor {
+    width: 26px;
+    height: 26px;
+    border: none;
+    background: conic-gradient(from 0deg,
+        #f97316 0deg,
+        #e11d48 60deg,
+        #8b5cf6 120deg,
+        #22c55e 180deg,
+        #0ea5e9 240deg,
+        #f59e0b 300deg,
+        #f97316 360deg);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.7), 0 0 40px rgba(236, 72, 153, 0.4);
+    animation: rainbow-rotate 3s linear infinite;
+    mix-blend-mode: normal;
+}
+
+@keyframes rainbow-rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+[data-theme="dark"] .cursor-follower,
+[data-theme="dark"] .ultimate-cursor-follower {
+    width: 55px;
+    height: 55px;
+    border: 2px solid rgba(139, 92, 246, 0.6);
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 50%, transparent 80%);
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.6), 0 0 50px rgba(236, 72, 153, 0.4);
+    animation: rainbow-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes rainbow-pulse {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 0 30px rgba(99, 102, 241, 0.6), 0 0 50px rgba(236, 72, 153, 0.4);
+    }
+    50% { 
+        transform: scale(1.12);
+        box-shadow: 0 0 40px rgba(139, 92, 246, 0.8), 0 0 70px rgba(236, 72, 153, 0.6);
+    }
+}
+
+/* Hover effect for Dark theme */
+[data-theme="dark"] a:hover ~ .cursor,
+[data-theme="dark"] button:hover ~ .cursor,
+[data-theme="dark"] a:hover ~ .ultimate-cursor,
+[data-theme="dark"] button:hover ~ .ultimate-cursor {
+    width: 34px;
+    height: 34px;
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.9), 0 0 60px rgba(236, 72, 153, 0.6);
+}
+
+/* SNOW THEME = Ice Crystal Glow */
+[data-theme="snow"] .cursor,
+[data-theme="snow"] .ultimate-cursor {
+    width: 28px;
+    height: 28px;
+    border: 3px solid #00d4ff !important;
+    background: radial-gradient(circle, 
+        rgba(255, 255, 255, 0.9) 0%, 
+        rgba(125, 211, 252, 0.6) 30%, 
+        rgba(0, 212, 255, 0.3) 60%, 
+        transparent 85%) !important;
+    box-shadow: 
+        0 0 15px rgba(0, 212, 255, 1),
+        0 0 30px rgba(0, 212, 255, 0.7),
+        0 0 45px rgba(125, 211, 252, 0.5),
+        inset 0 0 10px rgba(255, 255, 255, 0.8) !important;
+    animation: ice-crystal-sparkle 2s ease-in-out infinite !important;
+    mix-blend-mode: normal !important;
+}
+
+@keyframes ice-crystal-sparkle {
+    0%, 100% { 
+        filter: brightness(1.2) drop-shadow(0 0 8px rgba(0, 212, 255, 0.8));
+        transform: rotate(0deg);
+    }
+    25% {
+        filter: brightness(1.5) drop-shadow(0 0 12px rgba(0, 212, 255, 1));
+        transform: rotate(90deg);
+    }
+    50% { 
+        filter: brightness(1.8) drop-shadow(0 0 15px rgba(125, 211, 252, 1));
+        transform: rotate(180deg);
+    }
+    75% {
+        filter: brightness(1.5) drop-shadow(0 0 12px rgba(0, 212, 255, 1));
+        transform: rotate(270deg);
+    }
+}
+
+[data-theme="snow"] .cursor-follower,
+[data-theme="snow"] .ultimate-cursor-follower {
+    width: 60px;
+    height: 60px;
+    border: 2px solid rgba(0, 212, 255, 0.8) !important;
+    background: radial-gradient(circle, 
+        rgba(191, 219, 254, 0.4) 0%, 
+        rgba(125, 211, 252, 0.25) 40%, 
+        rgba(0, 212, 255, 0.15) 70%, 
+        transparent 90%) !important;
+    box-shadow: 
+        0 0 25px rgba(0, 212, 255, 0.9),
+        0 0 45px rgba(125, 211, 252, 0.7),
+        0 0 65px rgba(56, 189, 248, 0.5),
+        inset 0 0 15px rgba(255, 255, 255, 0.3) !important;
+    animation: ice-glow-pulse 3s ease-in-out infinite !important;
+}
+
+@keyframes ice-glow-pulse {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 
+            0 0 25px rgba(0, 212, 255, 0.9),
+            0 0 45px rgba(125, 211, 252, 0.7),
+            0 0 65px rgba(56, 189, 248, 0.5),
+            inset 0 0 15px rgba(255, 255, 255, 0.3);
+    }
+    50% { 
+        transform: scale(1.15);
+        box-shadow: 
+            0 0 35px rgba(0, 212, 255, 1),
+            0 0 60px rgba(125, 211, 252, 0.9),
+            0 0 85px rgba(56, 189, 248, 0.7),
+            inset 0 0 20px rgba(255, 255, 255, 0.5);
+    }
+}
+
+/* Hover effect for Snow theme */
+[data-theme="snow"] a:hover ~ .cursor,
+[data-theme="snow"] button:hover ~ .cursor,
+[data-theme="snow"] a:hover ~ .ultimate-cursor,
+[data-theme="snow"] button:hover ~ .ultimate-cursor {
+    width: 36px !important;
+    height: 36px !important;
+    box-shadow: 
+        0 0 20px rgba(0, 212, 255, 1),
+        0 0 40px rgba(0, 212, 255, 0.9),
+        0 0 60px rgba(125, 211, 252, 0.7),
+        inset 0 0 15px rgba(255, 255, 255, 1) !important;
 }
 
 /* Base Styles */

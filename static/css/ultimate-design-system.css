@@ -178,7 +178,8 @@ body {
     position: fixed;
     pointer-events: none;
     z-index: 9999;
-    transition: transform 0.15s ease;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease, left 0.1s ease, top 0.1s ease;
     mix-blend-mode: difference;
 }
 
@@ -190,7 +191,8 @@ body {
     position: fixed;
     pointer-events: none;
     z-index: 9998;
-    transition: transform 0.3s ease;
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s ease, left 0.15s ease, top 0.15s ease;
     opacity: 0.5;
 }
 

@@ -9,6 +9,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
     <style>
+        body {
+            padding-top: 80px; /* Account for fixed navbar */
+        }
+        
         .dashboard-container {
             max-width: 1200px;
             margin: 40px auto;
