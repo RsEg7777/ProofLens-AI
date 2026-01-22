@@ -809,6 +809,332 @@ footer::before {
   opacity: 1;
 }
 
+/* ============================================= */
+/* Theme Submenu Styles */
+/* ============================================= */
+.dropdown-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0.5rem 0;
+}
+
+.theme-submenu {
+  padding: 0.5rem 0;
+}
+
+.theme-submenu-header {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.theme-submenu-header i {
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.theme-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  color: var(--text-light);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.theme-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.theme-option.active {
+  background: rgba(0, 163, 255, 0.15);
+}
+
+.theme-icon {
+  font-size: 1.1rem;
+  margin-right: 0.75rem;
+  width: 24px;
+  text-align: center;
+}
+
+.theme-name {
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+.theme-badge {
+  background: linear-gradient(135deg, #00d4ff, #0891b2);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  margin-left: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(0, 212, 255, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(0, 212, 255, 0.6); }
+}
+
+.theme-check {
+  opacity: 0;
+  color: var(--accent);
+  font-size: 0.85rem;
+  transition: opacity 0.2s ease;
+}
+
+.theme-option.active .theme-check {
+  opacity: 1;
+}
+
+/* Snow Theme Option Special Styling */
+.snow-theme-option {
+  position: relative;
+  overflow: hidden;
+}
+
+.snow-theme-option::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.snow-theme-option:hover::before {
+  left: 100%;
+}
+
+/* ============================================= */
+/* Snow Theme Specific Overrides */
+/* ============================================= */
+[data-theme="snow"] {
+  --primary: #00d4ff;
+  --primary-dark: #0a1628;
+  --primary-light: #0d1f35;
+  --background: #0a1628;
+  --surface: rgba(0, 212, 255, 0.05);
+  --surface-dark: rgba(0, 212, 255, 0.02);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(199, 229, 255, 0.8);
+  --text-light: #ffffff;
+  --accent: #00d4ff;
+  --accent-dark: #0891b2;
+  --accent-light: #7dd3fc;
+  --border: rgba(0, 212, 255, 0.15);
+  --border-dark: rgba(0, 212, 255, 0.25);
+  --gradient-primary: linear-gradient(135deg, #0a1628, #0d1f35);
+  --gradient-accent: linear-gradient(135deg, #00d4ff, #0891b2);
+  --gradient-surface: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(0, 212, 255, 0.02));
+  --gradient-hero: linear-gradient(135deg, #0a1628, #132842);
+  --gradient-card: linear-gradient(135deg, rgba(0, 212, 255, 0.08), rgba(0, 212, 255, 0.03));
+  --gradient-glow: radial-gradient(circle at 50% 50%, rgba(0, 212, 255, 0.2), transparent 70%);
+}
+
+/* Snow Theme Hero Section */
+[data-theme="snow"] .hero-section {
+  background: linear-gradient(180deg, #0a1628 0%, #0d1f35 50%, #132842 100%);
+  position: relative;
+}
+
+[data-theme="snow"] .hero-section::before {
+  background: radial-gradient(circle at 50% 50%, rgba(0, 212, 255, 0.15), transparent 60%);
+}
+
+[data-theme="snow"] .hero-section h1 {
+  background: linear-gradient(90deg, #ffffff 0%, #00d4ff 50%, #7dd3fc 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: aurora-shimmer 3s ease-in-out infinite;
+}
+
+@keyframes aurora-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Snow Theme Cards */
+[data-theme="snow"] .card {
+  background: linear-gradient(135deg, rgba(13, 31, 53, 0.8), rgba(19, 40, 66, 0.6));
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  backdrop-filter: blur(15px);
+}
+
+[data-theme="snow"] .card::before {
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.15), transparent);
+  animation: snow-card-shimmer 4s ease-in-out infinite;
+}
+
+@keyframes snow-card-shimmer {
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
+}
+
+[data-theme="snow"] .card:hover {
+  border-color: rgba(0, 212, 255, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.15), 0 0 40px rgba(0, 212, 255, 0.1);
+}
+
+/* Snow Theme Buttons */
+[data-theme="snow"] .button-primary {
+  background: linear-gradient(135deg, #00d4ff, #0891b2);
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+}
+
+[data-theme="snow"] .button-primary:hover {
+  box-shadow: 0 6px 30px rgba(0, 212, 255, 0.5), 0 0 40px rgba(0, 212, 255, 0.2);
+}
+
+/* Snow Theme Navbar */
+[data-theme="snow"] .navbar {
+  background: rgba(10, 22, 40, 0.9);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+[data-theme="snow"] .profile-dropdown {
+  background: rgba(10, 22, 40, 0.95);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 212, 255, 0.1);
+}
+
+[data-theme="snow"] .profile-dropdown a:hover,
+[data-theme="snow"] .theme-option:hover {
+  background: rgba(0, 212, 255, 0.1);
+}
+
+[data-theme="snow"] .dropdown-divider {
+  background: rgba(0, 212, 255, 0.15);
+}
+
+/* Snow Theme Logo */
+[data-theme="snow"] .logo span {
+  color: #00d4ff;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5), 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+/* Snow Theme Links */
+[data-theme="snow"] .nav-links a:hover,
+[data-theme="snow"] .nav-links a.active {
+  color: #00d4ff;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+/* Snow Theme Footer */
+[data-theme="snow"] footer {
+  background: linear-gradient(180deg, #0d1f35, #0a1628);
+}
+
+[data-theme="snow"] footer::before {
+  background: linear-gradient(to right, transparent, #00d4ff, transparent);
+}
+
+[data-theme="snow"] .footer-section h4::after {
+  background: #00d4ff;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+[data-theme="snow"] .footer-section a:hover {
+  color: #00d4ff;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+/* Snow Theme Section Headers */
+[data-theme="snow"] .section-header h2 {
+  background: linear-gradient(135deg, #ffffff, #00d4ff, #7dd3fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Snow Theme Status Indicator */
+[data-theme="snow"] .status-indicator {
+  background: rgba(0, 212, 255, 0.15);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: #00d4ff;
+}
+
+/* Snow Theme Feature Tags */
+[data-theme="snow"] .feature-tag {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+[data-theme="snow"] .feature-tag:hover {
+  background: rgba(0, 212, 255, 0.2);
+  border-color: #00d4ff;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+}
+
+[data-theme="snow"] .feature-tag i {
+  color: #00d4ff;
+}
+
+/* Snow Theme Hero Badge */
+[data-theme="snow"] .hero-badge {
+  background: rgba(0, 212, 255, 0.15);
+  color: #00d4ff;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+/* Snow Theme Sidebar */
+[data-theme="snow"] .sidebar {
+  background: rgba(10, 22, 40, 0.95);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+[data-theme="snow"] .sidebar-links a:hover {
+  background: rgba(0, 212, 255, 0.1);
+}
+
+/* Snow Theme Avatar */
+[data-theme="snow"] .avatar-circle {
+  background: linear-gradient(135deg, #00d4ff, #0891b2);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+}
+
+[data-theme="snow"] .profile-icon:hover .avatar-circle {
+  box-shadow: 0 0 25px rgba(0, 212, 255, 0.6);
+}
+
+/* Snow Theme FAQ Cards */
+[data-theme="snow"] .faq-card {
+  background: linear-gradient(135deg, rgba(13, 31, 53, 0.8), rgba(19, 40, 66, 0.6));
+  border: 1px solid rgba(0, 212, 255, 0.15);
+}
+
+[data-theme="snow"] .faq-card:hover {
+  border-color: #00d4ff;
+  box-shadow: 0 8px 30px rgba(0, 212, 255, 0.15);
+}
+
+[data-theme="snow"] .faq-card h3::after {
+  color: #00d4ff;
+}
+
 .faq-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));

@@ -19,7 +19,7 @@
           <a href="#" class="profile-icon" id="profileDropdownToggle">
             <div class="avatar-circle">{{ current_user.username[0].upper() }}</div>
           </a>
-          <div class="profile-dropdown" id="profileDropdown">
+        <div class="profile-dropdown" id="profileDropdown">
             <a href="{{ url_for('auth.profile') }}">
               <i class="fa-solid fa-user"></i> Profile
             </a>
@@ -29,6 +29,31 @@
             <a href="{{ url_for('pricing') }}">
               <i class="fa-solid fa-credit-card"></i> Subscription
             </a>
+            <div class="dropdown-divider"></div>
+            <div class="theme-submenu">
+              <div class="theme-submenu-header">
+                <i class="fa-solid fa-palette"></i> Themes
+              </div>
+              <div class="theme-options">
+                <a href="#" class="theme-option" data-theme-option="light">
+                  <span class="theme-icon">☀️</span>
+                  <span class="theme-name">Light</span>
+                  <span class="theme-check"><i class="fa-solid fa-check"></i></span>
+                </a>
+                <a href="#" class="theme-option" data-theme-option="dark">
+                  <span class="theme-icon">🌙</span>
+                  <span class="theme-name">Dark</span>
+                  <span class="theme-check"><i class="fa-solid fa-check"></i></span>
+                </a>
+                <a href="#" class="theme-option snow-theme-option" data-theme-option="snow">
+                  <span class="theme-icon">❄️</span>
+                  <span class="theme-name">Snow</span>
+                  <span class="theme-badge">NEW</span>
+                  <span class="theme-check"><i class="fa-solid fa-check"></i></span>
+                </a>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
             <a href="{{ url_for('auth.logout') }}">
               <i class="fa-solid fa-sign-out-alt"></i> Logout
             </a>
@@ -45,6 +70,30 @@
           <a href="{{ url_for('auth.signup') }}">
             <i class="fa-solid fa-user-plus"></i> Sign Up
           </a>
+          <div class="dropdown-divider"></div>
+          <div class="theme-submenu">
+            <div class="theme-submenu-header">
+              <i class="fa-solid fa-palette"></i> Themes
+            </div>
+            <div class="theme-options">
+              <a href="#" class="theme-option" data-theme-option="light">
+                <span class="theme-icon">☀️</span>
+                <span class="theme-name">Light</span>
+                <span class="theme-check"><i class="fa-solid fa-check"></i></span>
+              </a>
+              <a href="#" class="theme-option" data-theme-option="dark">
+                <span class="theme-icon">🌙</span>
+                <span class="theme-name">Dark</span>
+                <span class="theme-check"><i class="fa-solid fa-check"></i></span>
+              </a>
+              <a href="#" class="theme-option snow-theme-option" data-theme-option="snow">
+                <span class="theme-icon">❄️</span>
+                <span class="theme-name">Snow</span>
+                <span class="theme-badge">NEW</span>
+                <span class="theme-check"><i class="fa-solid fa-check"></i></span>
+              </a>
+            </div>
+          </div>
         </div>
         {% endif %}
       </div>
@@ -86,6 +135,31 @@
             <a href="{{ url_for('pricing') }}">
               <i class="fa-solid fa-credit-card"></i> Subscription
             </a>
+            <div class="dropdown-divider"></div>
+            <div class="theme-submenu">
+              <div class="theme-submenu-header">
+                <i class="fa-solid fa-palette"></i> Themes
+              </div>
+              <div class="theme-options">
+                <a href="#" class="theme-option" data-theme-option="light">
+                  <span class="theme-icon">☀️</span>
+                  <span class="theme-name">Light</span>
+                  <span class="theme-check"><i class="fa-solid fa-check"></i></span>
+                </a>
+                <a href="#" class="theme-option" data-theme-option="dark">
+                  <span class="theme-icon">🌙</span>
+                  <span class="theme-name">Dark</span>
+                  <span class="theme-check"><i class="fa-solid fa-check"></i></span>
+                </a>
+                <a href="#" class="theme-option snow-theme-option" data-theme-option="snow">
+                  <span class="theme-icon">❄️</span>
+                  <span class="theme-name">Snow</span>
+                  <span class="theme-badge">NEW</span>
+                  <span class="theme-check"><i class="fa-solid fa-check"></i></span>
+                </a>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
             <a href="{{ url_for('auth.logout') }}">
               <i class="fa-solid fa-sign-out-alt"></i> Logout
             </a>
@@ -102,6 +176,30 @@
           <a href="{{ url_for('auth.signup') }}">
             <i class="fa-solid fa-user-plus"></i> Sign Up
           </a>
+          <div class="dropdown-divider"></div>
+          <div class="theme-submenu">
+            <div class="theme-submenu-header">
+              <i class="fa-solid fa-palette"></i> Themes
+            </div>
+            <div class="theme-options">
+              <a href="#" class="theme-option" data-theme-option="light">
+                <span class="theme-icon">☀️</span>
+                <span class="theme-name">Light</span>
+                <span class="theme-check"><i class="fa-solid fa-check"></i></span>
+              </a>
+              <a href="#" class="theme-option" data-theme-option="dark">
+                <span class="theme-icon">🌙</span>
+                <span class="theme-name">Dark</span>
+                <span class="theme-check"><i class="fa-solid fa-check"></i></span>
+              </a>
+              <a href="#" class="theme-option snow-theme-option" data-theme-option="snow">
+                <span class="theme-icon">❄️</span>
+                <span class="theme-name">Snow</span>
+                <span class="theme-badge">NEW</span>
+                <span class="theme-check"><i class="fa-solid fa-check"></i></span>
+              </a>
+            </div>
+          </div>
         </div>
         {% endif %}
       </div>

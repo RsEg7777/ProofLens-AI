@@ -1239,3 +1239,216 @@ footer {
   background: var(--gradient);
   animation: progress 1.5s ease-in-out infinite;
 }
+
+/* ============================================= */
+/* SNOW THEME - Page Specific Overrides */
+/* ============================================= */
+
+/* Snow Theme Hero Section */
+[data-theme="snow"] .hero {
+  background-image: radial-gradient(circle at 20% 30%, rgba(0, 212, 255, 0.08) 0%, transparent 50%), 
+                    radial-gradient(circle at 80% 70%, rgba(125, 211, 252, 0.08) 0%, transparent 50%);
+}
+
+[data-theme="snow"] .hero::before {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300d4ff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+[data-theme="snow"] .hero-text h1 {
+  background: linear-gradient(90deg, #ffffff 0%, #00d4ff 50%, #7dd3fc 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: snow-text-shimmer 4s ease-in-out infinite;
+}
+
+@keyframes snow-text-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+[data-theme="snow"] .hero-badge {
+  background: rgba(0, 212, 255, 0.15);
+  color: #00d4ff;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+/* Snow Theme Verification Box */
+[data-theme="snow"] .verification-box {
+  background: linear-gradient(145deg, rgba(13, 31, 53, 0.9), rgba(19, 40, 66, 0.7));
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 212, 255, 0.1);
+}
+
+[data-theme="snow"] .verification-box::before {
+  background: radial-gradient(circle at center, rgba(0, 212, 255, 0.1), transparent 70%);
+}
+
+/* Snow Theme Input Area */
+[data-theme="snow"] .input-area textarea {
+  background: rgba(10, 22, 40, 0.6);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="snow"] .input-area textarea:focus {
+  border-color: #00d4ff;
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2), 0 0 20px rgba(0, 212, 255, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Snow Theme Action Buttons */
+[data-theme="snow"] .action-buttons button:first-child {
+  background: linear-gradient(135deg, #00d4ff, #0891b2);
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+}
+
+[data-theme="snow"] .action-buttons button:first-child:hover {
+  background: linear-gradient(135deg, #0891b2, #00d4ff);
+  box-shadow: 0 6px 25px rgba(0, 212, 255, 0.5), 0 0 30px rgba(0, 212, 255, 0.2);
+}
+
+[data-theme="snow"] .action-buttons button:last-child {
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+[data-theme="snow"] .action-buttons button:last-child:hover {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: #00d4ff;
+}
+
+/* Snow Theme Feature Cards */
+[data-theme="snow"] .feature-card {
+  background: linear-gradient(145deg, rgba(13, 31, 53, 0.8), rgba(19, 40, 66, 0.6));
+  border: 1px solid rgba(0, 212, 255, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="snow"] .feature-card:hover {
+  border-color: rgba(0, 212, 255, 0.4);
+  box-shadow: 0 8px 30px rgba(0, 212, 255, 0.15), 0 0 40px rgba(0, 212, 255, 0.1);
+}
+
+[data-theme="snow"] .feature-icon {
+  background: linear-gradient(135deg, #00d4ff, #0891b2);
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+}
+
+/* Snow Theme Step Cards */
+[data-theme="snow"] .step-card {
+  background: linear-gradient(145deg, rgba(13, 31, 53, 0.8), rgba(19, 40, 66, 0.6));
+  border: 1px solid rgba(0, 212, 255, 0.15);
+}
+
+[data-theme="snow"] .step-card:hover {
+  border-color: rgba(0, 212, 255, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 212, 255, 0.15);
+}
+
+[data-theme="snow"] .step-number {
+  background: linear-gradient(135deg, #00d4ff, #0891b2);
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+}
+
+/* Snow Theme Tech Cards */
+[data-theme="snow"] .tech-card {
+  background: linear-gradient(145deg, rgba(13, 31, 53, 0.8), rgba(19, 40, 66, 0.6));
+  border: 1px solid rgba(0, 212, 255, 0.15);
+}
+
+[data-theme="snow"] .tech-card:hover {
+  border-color: #00d4ff;
+  box-shadow: 0 10px 30px rgba(0, 212, 255, 0.15);
+}
+
+[data-theme="snow"] .tech-card::before {
+  background: linear-gradient(90deg, #00d4ff, #0891b2);
+}
+
+[data-theme="snow"] .tech-icon {
+  background: linear-gradient(135deg, #00d4ff, #0891b2);
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+}
+
+/* Snow Theme Testimonial Cards */
+[data-theme="snow"] .testimonial-card {
+  background: linear-gradient(145deg, rgba(13, 31, 53, 0.8), rgba(19, 40, 66, 0.6));
+  border: 1px solid rgba(0, 212, 255, 0.15);
+}
+
+[data-theme="snow"] .quote {
+  color: #00d4ff;
+}
+
+/* Snow Theme CTA Section */
+[data-theme="snow"] .cta {
+  background: linear-gradient(135deg, #00d4ff, #0891b2, #164e63);
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="snow"] .cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.1), transparent 60%);
+}
+
+[data-theme="snow"] .cta-button {
+  background: #ffffff;
+  color: #0891b2;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="snow"] .cta-button:hover {
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.3), 0 0 30px rgba(255, 255, 255, 0.3);
+}
+
+/* Snow Theme Loading */
+[data-theme="snow"] .loading {
+  background: rgba(10, 22, 40, 0.95);
+}
+
+[data-theme="snow"] .loading-spinner {
+  border: 3px solid rgba(0, 212, 255, 0.2);
+  border-top-color: #00d4ff;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+[data-theme="snow"] .progress-bar {
+  background: rgba(0, 212, 255, 0.2);
+}
+
+[data-theme="snow"] .progress {
+  background: linear-gradient(90deg, #00d4ff, #0891b2);
+}
+
+/* Snow Theme Section Gradient Lines */
+[data-theme="snow"] .stats::before,
+[data-theme="snow"] .features::before,
+[data-theme="snow"] .how-it-works::before,
+[data-theme="snow"] .technology::before,
+[data-theme="snow"] .trust::before {
+  background: linear-gradient(to right, transparent, #00d4ff, transparent);
+}
+
+/* Snow Theme Input Label */
+[data-theme="snow"] .input-label i {
+  color: #00d4ff;
+}
+
+/* Snow Theme Status Indicator */
+[data-theme="snow"] .status-indicator {
+  background: rgba(0, 212, 255, 0.15);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: #00d4ff;
+  box-shadow: 0 2px 8px rgba(0, 212, 255, 0.2);
+}
+
+[data-theme="snow"] .pulse {
+  background: #00d4ff;
+  box-shadow: 0 0 10px #00d4ff;
+}

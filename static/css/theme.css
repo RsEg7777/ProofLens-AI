@@ -61,6 +61,375 @@
     --info-bg: #1e3a8a;
 }
 
+/* ============================================= */
+/* SNOW THEME - Winter Wonderland Edition */
+/* ============================================= */
+[data-theme="snow"] {
+    /* Snow Theme Base Colors */
+    --bg-primary: #0a1628;
+    --bg-secondary: #0d1f35;
+    --bg-tertiary: #132842;
+    --text-primary: #ffffff;
+    --text-secondary: #c7e5ff;
+    --text-tertiary: #8ec5ff;
+    --border-color: rgba(0, 212, 255, 0.2);
+    
+    /* Snow Theme Shadows with Glow */
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 212, 255, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 212, 255, 0.15);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 212, 255, 0.2);
+    
+    /* Snow Brand Colors - Cyan/Ice Blue */
+    --brand-primary: #00d4ff;
+    --brand-primary-hover: #00b8e6;
+    --brand-secondary: #00a8cc;
+    --brand-accent: #7dd3fc;
+    --brand-gradient: linear-gradient(135deg, #00d4ff 0%, #0891b2 50%, #164e63 100%);
+    
+    /* Snow Semantic Colors */
+    --success: #10b981;
+    --success-bg: rgba(16, 185, 129, 0.15);
+    --warning: #fbbf24;
+    --warning-bg: rgba(251, 191, 36, 0.15);
+    --error: #f87171;
+    --error-bg: rgba(248, 113, 113, 0.15);
+    --info: #38bdf8;
+    --info-bg: rgba(56, 189, 248, 0.15);
+    
+    /* Snow Special Effects Colors */
+    --snow-glow: rgba(0, 212, 255, 0.4);
+    --snow-glow-strong: rgba(0, 212, 255, 0.7);
+    --frost-overlay: rgba(200, 240, 255, 0.03);
+    --ice-shimmer: rgba(255, 255, 255, 0.1);
+}
+
+/* Snow Theme Body Enhancements */
+[data-theme="snow"] body {
+    background: linear-gradient(180deg, #0a1628 0%, #0d1f35 50%, #132842 100%);
+    background-attachment: fixed;
+    position: relative;
+}
+
+/* Snowfall Container */
+.snowfall-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9998;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+[data-theme="snow"] .snowfall-container {
+    opacity: 1;
+}
+
+/* Individual Snowflake */
+.snowflake {
+    position: absolute;
+    top: -10px;
+    color: #fff;
+    font-size: 1rem;
+    text-shadow: 0 0 5px rgba(0, 212, 255, 0.8), 0 0 10px rgba(0, 212, 255, 0.5);
+    animation: snowfall linear infinite;
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+.snowflake::before {
+    content: '❄';
+}
+
+/* Snowflake variations */
+.snowflake:nth-child(6n) { font-size: 0.6rem; opacity: 0.6; }
+.snowflake:nth-child(6n+1) { font-size: 0.8rem; opacity: 0.7; }
+.snowflake:nth-child(6n+2) { font-size: 1rem; opacity: 0.8; }
+.snowflake:nth-child(6n+3) { font-size: 1.2rem; opacity: 0.9; }
+.snowflake:nth-child(6n+4) { font-size: 0.7rem; opacity: 0.65; }
+.snowflake:nth-child(6n+5) { font-size: 1.1rem; opacity: 0.85; }
+
+@keyframes snowfall {
+    0% {
+        transform: translateY(-10px) rotate(0deg) translateX(0);
+    }
+    25% {
+        transform: translateY(25vh) rotate(90deg) translateX(15px);
+    }
+    50% {
+        transform: translateY(50vh) rotate(180deg) translateX(-15px);
+    }
+    75% {
+        transform: translateY(75vh) rotate(270deg) translateX(10px);
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg) translateX(-5px);
+    }
+}
+
+/* Snow Theme Card Styles */
+[data-theme="snow"] .card {
+    background: linear-gradient(135deg, rgba(13, 31, 53, 0.9) 0%, rgba(19, 40, 66, 0.8) 100%);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="snow"] .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+    animation: card-shimmer 3s ease-in-out infinite;
+}
+
+@keyframes card-shimmer {
+    0% { left: -100%; }
+    50%, 100% { left: 100%; }
+}
+
+[data-theme="snow"] .card:hover {
+    border-color: rgba(0, 212, 255, 0.4);
+    box-shadow: var(--shadow-lg), 0 0 40px rgba(0, 212, 255, 0.15);
+    transform: translateY(-4px);
+}
+
+/* Snow Theme Buttons */
+[data-theme="snow"] .btn-primary {
+    background: linear-gradient(135deg, #00d4ff 0%, #0891b2 100%);
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="snow"] .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+[data-theme="snow"] .btn-primary:hover::before {
+    left: 100%;
+}
+
+[data-theme="snow"] .btn-primary:hover {
+    box-shadow: 0 6px 25px rgba(0, 212, 255, 0.5), 0 0 50px rgba(0, 212, 255, 0.3);
+    transform: translateY(-3px);
+}
+
+/* Snow Theme Glow Effect */
+[data-theme="snow"] .glow {
+    box-shadow: 0 0 20px var(--brand-primary), 0 0 40px rgba(0, 212, 255, 0.3), 0 0 60px rgba(0, 212, 255, 0.1);
+}
+
+/* Snow Theme Input Fields */
+[data-theme="snow"] input,
+[data-theme="snow"] textarea,
+[data-theme="snow"] select {
+    background: rgba(10, 22, 40, 0.8);
+    border: 2px solid rgba(0, 212, 255, 0.2);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+[data-theme="snow"] input:focus,
+[data-theme="snow"] textarea:focus,
+[data-theme="snow"] select:focus {
+    border-color: #00d4ff;
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2), 0 0 20px rgba(0, 212, 255, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Snow Theme Score Display */
+[data-theme="snow"] .score-display {
+    background: linear-gradient(135deg, #00d4ff, #7dd3fc, #ffffff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+    animation: score-pulse 2s ease-in-out infinite;
+}
+
+@keyframes score-pulse {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.2); }
+}
+
+/* Snow Theme Progress Bar */
+[data-theme="snow"] .progress-fill {
+    background: linear-gradient(90deg, #00d4ff, #0891b2, #00d4ff);
+    background-size: 200% 100%;
+    animation: progress-flow 2s linear infinite;
+}
+
+@keyframes progress-flow {
+    0% { background-position: 200% 0; }
+    100% { background-position: 0% 0; }
+}
+
+[data-theme="snow"] .progress-fill::after {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+}
+
+/* Snow Theme Spinner */
+[data-theme="snow"] .spinner {
+    border: 3px solid rgba(0, 212, 255, 0.2);
+    border-top: 3px solid #00d4ff;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+/* Frost Border Animation */
+@keyframes frost-border {
+    0%, 100% { border-color: rgba(0, 212, 255, 0.2); }
+    50% { border-color: rgba(0, 212, 255, 0.5); }
+}
+
+[data-theme="snow"] .card {
+    animation: frost-border 4s ease-in-out infinite;
+}
+
+/* Aurora Effect for Snow Theme Headers */
+[data-theme="snow"] h1,
+[data-theme="snow"] h2,
+[data-theme="snow"] h3 {
+    position: relative;
+}
+
+[data-theme="snow"] .hero-text h1,
+[data-theme="snow"] .hero-section h1 {
+    background: linear-gradient(90deg, #ffffff, #00d4ff, #7dd3fc, #ffffff);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: aurora-text 4s ease-in-out infinite;
+}
+
+@keyframes aurora-text {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+/* Ice Crystal Badge */
+[data-theme="snow"] .badge {
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 10px rgba(0, 212, 255, 0.2);
+}
+
+[data-theme="snow"] .badge-info {
+    background: rgba(0, 212, 255, 0.15);
+    color: #00d4ff;
+    border: 1px solid rgba(0, 212, 255, 0.3);
+}
+
+/* Snow Theme Toast */
+[data-theme="snow"] .toast {
+    background: linear-gradient(135deg, rgba(13, 31, 53, 0.95), rgba(19, 40, 66, 0.95));
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 212, 255, 0.1);
+}
+
+/* Frozen Hover Effect */
+[data-theme="snow"] a:not(.btn):hover {
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+/* Ice Particles Background */
+.ice-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9997;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+[data-theme="snow"] .ice-particles {
+    opacity: 1;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(125, 211, 252, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.02) 0%, transparent 30%);
+    animation: ice-drift 20s ease-in-out infinite;
+}
+
+@keyframes ice-drift {
+    0%, 100% { transform: translateX(0) translateY(0); }
+    25% { transform: translateX(10px) translateY(-10px); }
+    50% { transform: translateX(0) translateY(5px); }
+    75% { transform: translateX(-10px) translateY(-5px); }
+}
+
+/* Frost Glass Effect */
+[data-theme="snow"] .navbar,
+[data-theme="snow"] .sidebar {
+    background: rgba(10, 22, 40, 0.85) !important;
+    backdrop-filter: blur(15px) saturate(180%);
+    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+/* Snow Theme Logo Glow */
+[data-theme="snow"] .logo span {
+    color: #00d4ff;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5), 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+/* Breathing Glow Animation */
+@keyframes breathing-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.2); }
+    50% { box-shadow: 0 0 40px rgba(0, 212, 255, 0.4), 0 0 60px rgba(0, 212, 255, 0.2); }
+}
+
+[data-theme="snow"] .verification-box,
+[data-theme="snow"] .tool-card,
+[data-theme="snow"] .feature-card {
+    animation: breathing-glow 4s ease-in-out infinite;
+}
+
+/* Snow Theme Gradient Text Utility */
+[data-theme="snow"] .gradient-text {
+    background: linear-gradient(135deg, #00d4ff, #7dd3fc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Snow Scrollbar */
+[data-theme="snow"] ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+[data-theme="snow"] ::-webkit-scrollbar-track {
+    background: #0a1628;
+}
+
+[data-theme="snow"] ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #00d4ff, #0891b2);
+    border-radius: 5px;
+    border: 2px solid #0a1628;
+}
+
+[data-theme="snow"] ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #00d4ff, #00b8e6);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
 /* Base Styles */
 * {
     margin: 0;
