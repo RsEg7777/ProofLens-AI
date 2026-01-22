@@ -70,6 +70,15 @@ mail = Mail(app)
 # Initialize SQLAlchemy
 db.init_app(app)
 
+# Ensure database tables exist (useful on platforms without shell access like Render free tier)
+try:
+    with app.app_context():
+        db.create_all()
+        print("Database tables ensured (create_all ran).")
+except Exception as e:
+    # Don't crash the app if migration fails; log and continue
+    print(f"Error creating database tables: {e}")
+
 # Initialize Flask-Login
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'

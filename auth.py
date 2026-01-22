@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, session
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, session, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import User, UserHistory, db, SavedArticle, VerificationResult, SearchQuery, CreditTransaction
@@ -281,7 +281,7 @@ def google_callback():
                 user.oauth_id = google_id
                 db.session.commit()
         else:
-            # Create new user
+            # Create new user for Google OAuth
             user = User(
                 username=name,
                 email=email,
@@ -290,9 +290,11 @@ def google_callback():
             user.oauth_provider = 'google'
             user.oauth_id = google_id
             user.password_hash = None  # OAuth users don't have password
-            
+
+            # Persist the user so we have a valid primary key
             db.session.add(user)
-            
+            db.session.flush()  # assigns user.id without committing the transaction
+
             # Give welcome bonus credits
             welcome_credits = CreditTransaction(
                 user_id=user.id,
@@ -301,14 +303,14 @@ def google_callback():
                 description='Welcome bonus - Free tier credits'
             )
             db.session.add(welcome_credits)
-            
+
             db.session.commit()
-            
+
             flash('Account created successfully! Welcome to ProofLens AI.')
-        
+
         # Log user in
         login_user(user, remember=True)
-        
+
         # Add login history
         history_entry = UserHistory(
             user_id=user.id,
@@ -317,10 +319,12 @@ def google_callback():
         )
         db.session.add(history_entry)
         db.session.commit()
-        
+
         return redirect(url_for('index'))
-        
+
     except Exception as e:
-        print(f"Google OAuth error: {str(e)}")
+        # Ensure the session is clean before returning an error
+        db.session.rollback()
+        current_app.logger.exception(f"Google OAuth error: {str(e)}")
         flash('An error occurred during Google sign-in. Please try again.')
         return redirect(url_for('auth.login'))
