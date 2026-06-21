@@ -177,7 +177,7 @@ Toggle theme using the button in the top-right corner (🌙/☀️)
 - Image detection
 - Limited exports
 
-### Individual ($9.99/month)
+### Individual (₹799/month)
 - 100 verifications/month
 - All verification types
 - Unlimited exports
@@ -294,7 +294,7 @@ This project is licensed under the MIT License - see the [LICENCE](LICENCE) file
 
 ## 📞 Support
 
-- **Documentation**: See `IMPLEMENTATION_STATUS.md` for detailed status
+- **Documentation**: See this README for the current project status and setup notes
 - **Issues**: GitHub Issues (update with your repository URL)
 - **Email**: support@prooflens.ai
 - **Discord**: Community link (update when available)
@@ -302,12 +302,6 @@ This project is licensed under the MIT License - see the [LICENCE](LICENCE) file
 ---
 
 ## 🗺️ Roadmap
-
-See our `IMPLEMENTATION_STATUS.md` for:
-- Detailed feature breakdown
-- Development phases
-- Priority matrix
-- Timeline estimates
 
 **Current Status**: Phase 1 Complete (Core Infrastructure)
 

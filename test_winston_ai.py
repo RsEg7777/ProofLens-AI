@@ -104,7 +104,7 @@ def test_winston_ai():
         print("   1. Check your internet connection")
         print("   2. Verify your Winston AI token is valid")
         print("   3. Check if you have remaining credits")
-        print("   4. Review WINSTON_AI_SETUP.md for more help")
+        print("   4. Review the README for setup guidance")
         return False
 
 if __name__ == "__main__":
